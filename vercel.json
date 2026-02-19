@@ -5,15 +5,5 @@
             "source": "/api/(.*)",
             "destination": "/api/index.ts"
         }
-    ],
-    "builds": [
-        {
-            "src": "api/index.ts",
-            "use": "@vercel/node"
-        },
-        {
-            "src": "package.json",
-            "use": "@vercel/static-build"
-        }
     ]
 }
