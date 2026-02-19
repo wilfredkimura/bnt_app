@@ -4,7 +4,7 @@ import { prisma } from '../../src/lib/prisma';
 const router = Router();
 
 // GET /api/gallery - Get all gallery items
-router.get('/', async (req, res) => {
+router.get('/', async (_req, res) => {
     try {
         const items = await prisma.galleryItem.findMany({
             orderBy: { createdAt: 'desc' },

@@ -4,7 +4,7 @@ import { prisma } from '../../src/lib/prisma';
 const router = Router();
 
 // GET /api/stats - Get dashboard statistics
-router.get('/', async (req, res) => {
+router.get('/', async (_req, res) => {
     try {
         const [totalStories, publishedStories, galleryCount] = await Promise.all([
             prisma.story.count(),

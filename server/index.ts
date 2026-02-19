@@ -22,7 +22,7 @@ app.use('/api/gallery', galleryRouter);
 app.use('/api/stats', statsRouter);
 
 // Health check
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (_req, res) => {
     res.json({ status: 'ok', message: 'API server is running' });
 });
 
