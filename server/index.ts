@@ -27,6 +27,12 @@ app.get('/api/health', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-    console.log(`🚀 API server running on http://localhost:${PORT}`);
-});
+// Export app for Vercel
+export default app;
+
+// Start server if not running in Vercel (Vercel sets a specific environment, but checking for direct execution is safer or just export)
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`🚀 API server running on http://localhost:${PORT}`);
+    });
+}
