@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Polaroid } from './ui/Polaroid';
 import { Doodle } from './ui/Doodle';
 const photos = [{
@@ -34,29 +34,29 @@ const photos = [{
 }];
 export function GallerySection() {
   return <section className="py-24 px-4 bg-texture-cork relative overflow-hidden">
-      {/* Section Title */}
-      <div className="text-center mb-16 relative z-10">
-        <div className="inline-block relative">
-          <h2 className="font-marker text-4xl md:text-6xl text-brand-brown transform -rotate-1">
-            Our Story in Pictures
-          </h2>
-          <Doodle type="squiggle" className="absolute -bottom-6 left-0 w-full text-brand-burgundy h-8" />
-        </div>
-        <p className="font-hand text-2xl text-brand-brown/80 mt-6 max-w-2xl mx-auto">
-          From read-aloud sessions to library transformations. Every photo
-          captures a moment of literacy in action across Kenya.
-        </p>
+    {/* Section Title */}
+    <div className="text-center mb-16 relative z-10">
+      <div className="inline-block relative">
+        <h2 className="font-marker text-4xl md:text-6xl text-brand-brown transform -rotate-1">
+          Our Story in Pictures
+        </h2>
+        <Doodle type="squiggle" className="absolute -bottom-6 left-0 w-full text-brand-burgundy h-8" />
       </div>
+      <p className="font-hand text-2xl text-brand-brown/80 mt-6 max-w-2xl mx-auto">
+        From read-aloud sessions to library transformations. Every photo
+        captures a moment of literacy in action across Kenya.
+      </p>
+    </div>
 
-      {/* Gallery Grid */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-4 relative z-10">
-        {photos.map((photo, index) => <div key={index} className="flex justify-center p-4">
-            <Polaroid {...photo} delay={index * 0.1} />
-          </div>)}
-      </div>
+    {/* Gallery Grid */}
+    <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-4 relative z-10">
+      {photos.map((photo, index) => <div key={index} className="flex justify-center p-4">
+        <Polaroid {...photo} alt={photo.caption} delay={index * 0.1} />
+      </div>)}
+    </div>
 
-      {/* Decorative elements */}
-      <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rotate-12 backdrop-blur-sm rounded-lg pointer-events-none"></div>
-      <div className="absolute bottom-10 right-10 w-40 h-40 bg-brand-orange/10 -rotate-6 rounded-full pointer-events-none"></div>
-    </section>;
+    {/* Decorative elements */}
+    <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rotate-12 backdrop-blur-sm rounded-lg pointer-events-none"></div>
+    <div className="absolute bottom-10 right-10 w-40 h-40 bg-brand-orange/10 -rotate-6 rounded-full pointer-events-none"></div>
+  </section>;
 }

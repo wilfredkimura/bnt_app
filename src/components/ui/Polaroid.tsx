@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { motion } from 'framer-motion';
 import { Tape } from './Tape';
 import { Pin } from './Pin';
@@ -43,22 +43,22 @@ export function Polaroid({
   }} className={`relative bg-white p-3 pb-12 shadow-lg hover:shadow-2xl transition-shadow duration-300 w-full max-w-[280px] mx-auto ${className}`} style={{
     transformOrigin: 'center center'
   }}>
-      {/* Attachment */}
-      {attachment === 'tape' && <Tape className="-top-3 left-1/2 -translate-x-1/2" />}
-      {attachment === 'pin' && <Pin className="-top-2 left-1/2 -translate-x-1/2" />}
+    {/* Attachment */}
+    {attachment === 'tape' && <Tape className="-top-3 left-1/2 -translate-x-1/2" />}
+    {attachment === 'pin' && <Pin className="-top-2 left-1/2 -translate-x-1/2" />}
 
-      {/* Photo Area */}
-      <div className="aspect-[4/5] w-full overflow-hidden bg-gray-100 mb-3 filter sepia-[0.1] contrast-[1.05]">
-        <img src={src} alt={alt} className="w-full h-full object-cover" />
-        {/* Inner shadow/vignette for realism */}
-        <div className="absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.1)] pointer-events-none"></div>
-      </div>
+    {/* Photo Area */}
+    <div className="aspect-[4/5] w-full overflow-hidden bg-gray-100 mb-3 filter sepia-[0.1] contrast-[1.05]">
+      <img src={src} alt={alt} className="w-full h-full object-cover" />
+      {/* Inner shadow/vignette for realism */}
+      <div className="absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.1)] pointer-events-none"></div>
+    </div>
 
-      {/* Caption */}
-      {caption && <div className="absolute bottom-3 left-0 right-0 text-center px-2">
-          <p className="font-hand text-xl text-gray-800 leading-tight transform -rotate-1">
-            {caption}
-          </p>
-        </div>}
-    </motion.div>;
+    {/* Caption */}
+    {caption && <div className="absolute bottom-3 left-0 right-0 text-center px-2">
+      <p className="font-hand text-xl text-gray-800 leading-tight transform -rotate-1">
+        {caption}
+      </p>
+    </div>}
+  </motion.div>;
 }

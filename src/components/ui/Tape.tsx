@@ -1,4 +1,4 @@
-import React from 'react';
+
 interface TapeProps {
   className?: string;
   variant?: 'top' | 'corner-tl' | 'corner-tr' | 'corner-bl' | 'corner-br';
@@ -26,7 +26,7 @@ export function Tape({
     maskImage: "url(\"data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='0' width='100%25' height='100%25' fill='black'/%3E%3C/svg%3E\")",
     WebkitMaskImage: "url(\"data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='0' width='100%25' height='100%25' fill='black'/%3E%3C/svg%3E\")"
   }}>
-      {/* Texture overlay for tape */}
-      <div className="absolute inset-0 opacity-20 bg-yellow-100 mix-blend-multiply"></div>
-    </div>;
+    {/* Texture overlay for tape */}
+    <div className="absolute inset-0 opacity-20 bg-yellow-100 mix-blend-multiply"></div>
+  </div>;
 }
