@@ -1,7 +1,7 @@
 // Frontend API client - calls Express backend
 // Replace direct Prisma calls with HTTP requests
 
-const API_URL = 'http://localhost:3001/api';
+export const API_URL = '/api';
 
 // ==================
 // STORIES
