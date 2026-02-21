@@ -110,3 +110,13 @@ export async function getDashboardStats() {
     if (!res.ok) throw new Error('Failed to fetch stats');
     return res.json();
 }
+
+// ==================
+// USERS
+// ==================
+
+export async function getAllUsers() {
+    const res = await fetch(`${API_URL}/auth/users`);
+    if (!res.ok) throw new Error('Failed to fetch users');
+    return res.json();
+}

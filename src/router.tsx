@@ -14,6 +14,7 @@ import { AdminDashboard } from './pages/admin/Dashboard';
 import { AdminStories } from './pages/admin/Stories';
 import { StoryEditor } from './pages/admin/StoryEditor';
 import { AdminGallery } from './pages/admin/Gallery';
+import { AdminUsers } from './pages/admin/Users';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 export const router = createBrowserRouter([
@@ -82,7 +83,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: 'users',
-                element: <div className="font-marker text-4xl text-brand-brown">Users Management - Coming Soon</div>,
+                element: <AdminUsers />,
             },
         ],
     },
