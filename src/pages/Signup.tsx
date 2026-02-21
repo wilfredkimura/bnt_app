@@ -42,13 +42,13 @@ export function Signup() {
         }
 
         setLoading(true);
-        const success = await register(formData.name, formData.email, formData.password, formData.role);
+        const result = await register(formData.name, formData.email, formData.password, formData.role);
         setLoading(false);
 
-        if (success) {
+        if (result.success) {
             navigate('/');
         } else {
-            setError('Registration failed. Email may already be in use.');
+            setError(result.error || 'Registration failed. Email may already be in use.');
         }
     };
 

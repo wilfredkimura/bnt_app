@@ -12,7 +12,7 @@ interface AuthContextType {
     isAdmin: boolean;
     user: User | null;
     login: (email: string, password: string) => Promise<boolean>;
-    register: (name: string, email: string, password: string, role: 'Volunteer' | 'Donor') => Promise<boolean>;
+    register: (name: string, email: string, password: string, role: 'Volunteer' | 'Donor') => Promise<{ success: boolean; error?: string }>;
     logout: () => void;
 }
 
@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const register = async (name: string, email: string, password: string, role: 'Volunteer' | 'Donor'): Promise<boolean> => {
+    const register = async (name: string, email: string, password: string, role: 'Volunteer' | 'Donor'): Promise<{ success: boolean; error?: string }> => {
         try {
             const response = await fetch('/api/auth/register', {
                 method: 'POST',
@@ -63,17 +63,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 body: JSON.stringify({ name, email, password, role }),
             });
 
+            const data = await response.json();
+
             if (response.ok) {
-                const userData = await response.json();
-                localStorage.setItem('user', JSON.stringify(userData));
-                setUser(userData);
+                localStorage.setItem('user', JSON.stringify(data));
+                setUser(data);
                 setIsAuthenticated(true);
-                return true;
+                return { success: true };
             }
-            return false;
+            return { success: false, error: data.error || 'Registration failed' };
         } catch (error) {
             console.error('Registration error:', error);
-            return false;
+            return { success: false, error: 'Network error. Please check your connection.' };
         }
     };
 
