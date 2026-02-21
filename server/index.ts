@@ -1,10 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import storiesRouter from './routes/stories';
-import galleryRouter from './routes/gallery';
-import statsRouter from './routes/stats';
-import authRouter from './routes/auth';
+import storiesRouter from './routes/stories.js';
+import galleryRouter from './routes/gallery.js';
+import statsRouter from './routes/stats.js';
+import authRouter from './routes/auth.js';
 
 dotenv.config();
 
