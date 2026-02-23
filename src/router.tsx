@@ -7,6 +7,7 @@ import { Gallery } from './pages/Gallery';
 import { GetInvolved } from './pages/GetInvolved';
 import { Login } from './pages/Login';
 import { Signup } from './pages/Signup';
+import { SubmitRequest } from './pages/SubmitRequest';
 
 // Admin imports
 import { AdminLayout } from './components/admin/AdminLayout';
@@ -15,6 +16,7 @@ import { AdminStories } from './pages/admin/Stories';
 import { StoryEditor } from './pages/admin/StoryEditor';
 import { AdminGallery } from './pages/admin/Gallery';
 import { AdminUsers } from './pages/admin/Users';
+import { AdminRequests } from './pages/admin/Requests';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 export const router = createBrowserRouter([
@@ -51,6 +53,10 @@ export const router = createBrowserRouter([
         path: '/signup',
         element: <Signup />,
     },
+    {
+        path: '/requests',
+        element: <SubmitRequest />,
+    },
 
     // Admin routes (protected)
     {
@@ -84,6 +90,10 @@ export const router = createBrowserRouter([
             {
                 path: 'users',
                 element: <AdminUsers />,
+            },
+            {
+                path: 'requests',
+                element: <AdminRequests />,
             },
         ],
     },

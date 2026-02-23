@@ -40,9 +40,9 @@ export function GallerySection() {
         <h2 className="font-marker text-4xl md:text-6xl text-brand-brown transform -rotate-1">
           Our Story in Pictures
         </h2>
-        <Doodle type="squiggle" className="absolute -bottom-6 left-0 w-full text-brand-burgundy h-8" />
+        <Doodle type="squiggle" className="absolute -bottom-1 left-0 w-full text-brand-burgundy h-6" />
       </div>
-      <p className="font-hand text-2xl text-brand-brown/80 mt-6 max-w-2xl mx-auto">
+      <p className="font-hand text-2xl text-brand-brown/80 mt-16 max-w-2xl mx-auto">
         From read-aloud sessions to library transformations. Every photo
         captures a moment of literacy in action across Kenya.
       </p>

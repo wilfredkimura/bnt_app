@@ -50,6 +50,18 @@ enum Currency {
   EUR
 }
 
+enum RequestStatus {
+  Pending
+  InProgress
+  Completed
+  Rejected
+}
+
+enum RequestType {
+  Petition
+  Custom
+}
+
 // --------------------
 // USER & AUTH MODELS
 // --------------------
@@ -65,6 +77,7 @@ model User {
 
   // Relations
   donations Donation[]
+  requests  UserRequest[]
 
   @@map("users")
 }
@@ -253,4 +266,23 @@ model Event {
 
   @@index([published, eventDate])
   @@map("events")
+}
+
+model UserRequest {
+  id        String        @id @default(cuid())
+  type      RequestType   @default(Custom)
+  subject   String
+  message   String        @db.Text
+  status    RequestStatus @default(Pending)
+  adminNote String?       @db.Text
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  // Relations
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  @@index([status])
+  @@index([userId])
+  @@map("user_requests")
 }

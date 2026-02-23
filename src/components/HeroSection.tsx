@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Doodle } from './ui/Doodle';
 import { Polaroid } from './ui/Polaroid';
 export function HeroSection() {
-  return <section className="relative w-full min-h-[90vh] flex flex-col items-center justify-center overflow-hidden py-20 px-4">
+  return <section className="relative w-full min-h-[90vh] flex flex-col items-center justify-center overflow-hidden pt-20 pb-32 md:pb-48 px-4">
     {/* Background Doodles */}
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
       <Doodle type="star" className="absolute top-20 left-[10%] text-brand-orange w-16 h-16 opacity-60 rotate-12" />
@@ -70,11 +70,9 @@ export function HeroSection() {
       </div>
 
       {/* Hero Image Cluster */}
-      <div className="relative h-[400px] md:h-[500px] w-full flex items-center justify-center">
+      <div className="relative h-[600px] md:h-[700px] w-full flex items-center justify-center">
         <div className="relative w-full h-full max-w-md mx-auto">
-          <Polaroid src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Children reading together" caption="Kangemi Read Aloud" rotation={-6} attachment="pin" className="absolute top-0 left-4 z-10 w-64" delay={0.2} />
-          <Polaroid src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Books in library" caption="525 Books - Rongai" rotation={4} attachment="tape" className="absolute bottom-0 right-4 z-20 w-64" delay={0.4} />
-          <Doodle type="heart" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 text-brand-burgundy z-30 opacity-80" />
+          <Polaroid src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Children reading together" caption="Kangemi Read Aloud" rotation={-6} attachment="pin" className="absolute top-4 left-4 z-10 w-64" delay={0.2} />
         </div>
       </div>
     </div>
