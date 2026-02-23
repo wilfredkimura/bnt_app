@@ -17,6 +17,7 @@ import { StoryEditor } from './pages/admin/StoryEditor';
 import { AdminGallery } from './pages/admin/Gallery';
 import { AdminUsers } from './pages/admin/Users';
 import { AdminRequests } from './pages/admin/Requests';
+import { CommunityManagement } from './pages/admin/CommunityManagement';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 export const router = createBrowserRouter([
@@ -94,6 +95,10 @@ export const router = createBrowserRouter([
             {
                 path: 'requests',
                 element: <AdminRequests />,
+            },
+            {
+                path: 'community',
+                element: <CommunityManagement />,
             },
         ],
     },

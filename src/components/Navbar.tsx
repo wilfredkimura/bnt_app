@@ -14,6 +14,13 @@ export function Navbar() {
         { name: 'Get Involved', path: '/get-involved' },
     ];
 
+    const authenticatedLinks = [
+        ...navLinks,
+        { name: 'Requests', path: '/requests' },
+    ];
+
+    const currentLinks = isAuthenticated ? authenticatedLinks : navLinks;
+
     const handleLogout = () => {
         logout();
         setIsMenuOpen(false);
@@ -34,11 +41,11 @@ export function Navbar() {
 
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center gap-6">
-                        {navLinks.map((link) => (
+                        {currentLinks.map((link) => (
                             <Link
                                 key={link.path}
                                 to={link.path}
-                                className="font-hand text-xl text-brand-brown hover:text-brand-burgundy transition-colors"
+                                className="font-marker text-xl text-brand-brown hover:text-brand-burgundy transition-colors"
                             >
                                 {link.name}
                             </Link>
@@ -113,7 +120,7 @@ export function Navbar() {
             {isMenuOpen && (
                 <div className="md:hidden bg-brand-cream border-t-2 border-brand-brown/20">
                     <div className="px-4 py-4 space-y-3">
-                        {navLinks.map((link) => (
+                        {currentLinks.map((link) => (
                             <Link
                                 key={link.path}
                                 to={link.path}

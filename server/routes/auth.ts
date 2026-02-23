@@ -28,13 +28,27 @@ router.post('/register', async (req, res) => {
         }
 
         // Create user (in production, hash the password with bcrypt)
-        const user = await prisma.user.create({
-            data: {
-                name,
-                email,
-                password, // TODO: Hash with bcrypt in production
-                role: role || 'Volunteer', // Default to Volunteer
-            },
+        const user = await prisma.$transaction(async (tx) => {
+            const newUser = await tx.user.create({
+                data: {
+                    name,
+                    email,
+                    password, // TODO: Hash with bcrypt in production
+                    role: role || 'Volunteer', // Default to Volunteer
+                },
+            });
+
+            // Automatically create CommunityMember
+            await tx.communityMember.create({
+                data: {
+                    name: newUser.name,
+                    role: newUser.role,
+                    email: newUser.email,
+                    isActive: true,
+                },
+            });
+
+            return newUser;
         });
 
         res.status(201).json({

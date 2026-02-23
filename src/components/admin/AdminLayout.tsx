@@ -19,6 +19,7 @@ export function AdminLayout() {
         { name: 'Gallery', path: '/admin/gallery', icon: '🖼️' },
         { name: 'Users', path: '/admin/users', icon: '👥' },
         { name: 'Requests', path: '/admin/requests', icon: '📩' },
+        { name: 'Community', path: '/admin/community', icon: '🤝' },
     ];
 
     const isActive = (path: string) => {

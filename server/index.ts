@@ -6,6 +6,7 @@ import galleryRouter from './routes/gallery.js';
 import statsRouter from './routes/stats.js';
 import authRouter from './routes/auth.js';
 import requestsRouter from './routes/requests.js';
+import communityRouter from './routes/community.js';
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use('/api/stories', storiesRouter);
 app.use('/api/gallery', galleryRouter);
 app.use('/api/stats', statsRouter);
 app.use('/api/requests', requestsRouter);
+app.use('/api/community', communityRouter);
 
 // Health check
 app.get('/api/health', (_req, res) => {
