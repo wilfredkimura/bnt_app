@@ -18,6 +18,8 @@ import { AdminGallery } from './pages/admin/Gallery';
 import { AdminUsers } from './pages/admin/Users';
 import { AdminRequests } from './pages/admin/Requests';
 import { CommunityManagement } from './pages/admin/CommunityManagement';
+import { Profile } from './pages/Profile';
+import { Members } from './pages/Members';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 export const router = createBrowserRouter([
@@ -60,6 +62,14 @@ export const router = createBrowserRouter([
     },
 
     // Admin routes (protected)
+    {
+        path: '/members',
+        element: <Members />
+    },
+    {
+        path: '/profile',
+        element: <ProtectedRoute><Profile /></ProtectedRoute>
+    },
     {
         path: '/admin',
         element: (

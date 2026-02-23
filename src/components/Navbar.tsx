@@ -10,13 +10,12 @@ export function Navbar() {
         { name: 'Home', path: '/' },
         { name: 'Stories', path: '/stories' },
         { name: 'Impact', path: '/impact' },
-        { name: 'Gallery', path: '/gallery' },
+        { name: 'Members', path: '/members' },
         { name: 'Get Involved', path: '/get-involved' },
     ];
 
     const authenticatedLinks = [
         ...navLinks,
-        { name: 'Requests', path: '/requests' },
     ];
 
     const currentLinks = isAuthenticated ? authenticatedLinks : navLinks;
@@ -54,12 +53,24 @@ export function Navbar() {
                         {/* Conditional Auth Buttons */}
                         {isAuthenticated ? (
                             <>
+                                <Link
+                                    to="/requests"
+                                    className="font-marker text-lg text-brand-brown hover:text-brand-burgundy transition-colors"
+                                >
+                                    📩 Requests
+                                </Link>
+                                <Link
+                                    to="/profile"
+                                    className="font-marker text-lg bg-brand-orange text-brand-cream px-4 py-2 rounded-lg hover:bg-brand-brown transition-all"
+                                >
+                                    👤 My Profile
+                                </Link>
                                 {isAdmin && (
                                     <Link
                                         to="/admin"
-                                        className="font-hand text-lg bg-brand-burgundy text-brand-cream px-4 py-2 rounded-lg hover:bg-brand-brown transition-all"
+                                        className="font-marker text-lg bg-brand-burgundy text-brand-cream px-4 py-2 rounded-lg hover:bg-brand-brown transition-all"
                                     >
-                                        📊 Admin Dashboard
+                                        📊 Admin
                                     </Link>
                                 )}
                                 <div className="flex items-center gap-3">
