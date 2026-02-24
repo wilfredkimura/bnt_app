@@ -43,7 +43,7 @@ export function Footer() {
                 <Doodle type="heart" className="w-12 h-12 mx-auto mb-6 text-brand-orange" />
 
                 <div className="text-center font-sans text-sm opacity-60">
-                    <p>© 2025 Books and Trunks Society. Established October 2024.</p>
+                    <p>© {new Date().getFullYear()} Books and Trunks Society. Established October 2024.</p>
                 </div>
             </div>
 

@@ -85,10 +85,25 @@ export const recordActivityMiddleware = async (req: any, _res: any, next: any) =
                     console.log(`Synced user ${email} from Clerk to Neon`);
                 }
             } else {
-                // Just update activity timestamp without fetching from Clerk
-                await prisma.user.update({
-                    where: { clerkId },
-                    data: { lastLogin: new Date() }
+                // Just update activity timestamp AND ensure role is in sync
+                await prisma.$transaction(async (tx) => {
+                    await tx.user.update({
+                        where: { clerkId },
+                        data: { lastLogin: new Date() }
+                    });
+
+                    // Explicitly sync the role to CommunityMember if User exists
+                    const user = await tx.user.findUnique({
+                        where: { clerkId },
+                        select: { email: true, role: true }
+                    });
+
+                    if (user) {
+                        await tx.communityMember.updateMany({
+                            where: { email: { equals: user.email, mode: 'insensitive' } },
+                            data: { role: user.role }
+                        });
+                    }
                 });
             }
         } catch (error) {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useUser, RedirectToSignIn } from '@clerk/clerk-react';
+import { useRole } from '../contexts/RoleContext';
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
@@ -8,9 +9,10 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children, adminOnly = false }: ProtectedRouteProps) {
-    const { isLoaded, isSignedIn, user } = useUser();
+    const { isLoaded: userLoaded, isSignedIn } = useUser();
+    const { isAdmin, loading: roleLoading } = useRole();
 
-    if (!isLoaded) {
+    if (!userLoaded || roleLoading) {
         return <div className="h-screen w-screen flex items-center justify-center font-hand text-2xl text-brand-brown">Loading...</div>;
     }
 
@@ -18,13 +20,8 @@ export function ProtectedRoute({ children, adminOnly = false }: ProtectedRoutePr
         return <RedirectToSignIn />;
     }
 
-    if (adminOnly) {
-        const isAdmin = user?.publicMetadata?.role === 'Admin' ||
-            user?.emailAddresses.some(e => e.emailAddress.includes('admin@booksandtrunks.org'));
-
-        if (!isAdmin) {
-            return <Navigate to="/" replace />;
-        }
+    if (adminOnly && !isAdmin) {
+        return <Navigate to="/" replace />;
     }
 
     return <>{children}</>;

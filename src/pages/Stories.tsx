@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Navbar } from '../components/Navbar';
-import { Footer } from '../components/Footer';
 import { Doodle } from '../components/ui/Doodle';
 import { getPublishedStories } from '../lib/api';
 import type { Story } from '@prisma/client';
@@ -27,10 +25,8 @@ export function Stories() {
 
     return (
         <main className="min-h-screen w-full bg-texture-paper overflow-x-hidden selection:bg-brand-orange/30">
-            <Navbar />
-
             {/* Hero Section */}
-            <section className="pt-32 pb-16 px-4">
+            <section className="pb-16 px-4">
                 <div className="max-w-6xl mx-auto text-center">
                     <div className="relative inline-block mb-6">
                         <h1 className="font-marker text-5xl md:text-7xl text-brand-brown relative z-10">
@@ -139,8 +135,6 @@ export function Stories() {
                     </button>
                 </div>
             </section>
-
-            <Footer />
         </main>
     );
 }

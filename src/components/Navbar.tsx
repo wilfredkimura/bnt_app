@@ -1,56 +1,18 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
     SignedIn,
     SignedOut,
     SignInButton,
     UserButton,
-    useUser,
-    useAuth
+    useUser
 } from '@clerk/clerk-react';
+import { useRole } from '../contexts/RoleContext';
 
 export function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const { user, isSignedIn } = useUser();
-    const { getToken } = useAuth();
-    const syncChecked = useRef(false);
-    const [dbRole, setDbRole] = useState<string | null>(null);
-
-    // Auto-sync trigger & Role fetch: When user logs in, ensure they exist in Neon and get their role
-    useEffect(() => {
-        if (isSignedIn && !syncChecked.current) {
-            const syncUser = async () => {
-                try {
-                    const token = await getToken();
-                    // Ping the profile endpoint to both trigger sync AND get the latest role
-                    const res = await fetch('/api/community/me', {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-
-                    if (res.ok) {
-                        const profile = await res.json();
-                        setDbRole(profile.role);
-                        console.log('[Navbar] User profile loaded:', profile.role);
-                        syncChecked.current = true;
-                    } else if (res.status === 404) {
-                        // If not found yet, maybe the background sync is still running?
-                        // Hit health to force a sync if needed
-                        await fetch('/api/health', {
-                            headers: { 'Authorization': `Bearer ${token}` }
-                        });
-                    }
-                } catch (err) {
-                    console.error('[Navbar] Profile fetch fail:', err);
-                }
-            };
-            syncUser();
-        }
-    }, [isSignedIn, getToken]);
-
-    // Check for admin role - DB role takes priority, fallback to metadata/email for initial dev
-    const isAdmin = dbRole === 'Admin' ||
-        user?.publicMetadata?.role === 'Admin' ||
-        user?.emailAddresses.some(e => e.emailAddress.includes('admin@booksandtrunks.org'));
+    const { isSignedIn } = useUser();
+    const { isAdmin } = useRole();
 
     const navLinks = [
         { name: 'Home', path: '/' },

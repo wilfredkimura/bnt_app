@@ -1,6 +1,3 @@
-
-import { Navbar } from '../components/Navbar';
-import { Footer } from '../components/Footer';
 import { HeroSection } from '../components/HeroSection';
 import { GallerySection } from '../components/GallerySection';
 import { ImpactSection } from '../components/ImpactSection';
@@ -8,9 +5,7 @@ import { CommunitySection } from '../components/CommunitySection';
 
 export function Home() {
     return (
-        <main className="min-h-screen w-full bg-texture-paper overflow-x-hidden selection:bg-brand-orange/30">
-            <Navbar />
-
+        <main className="min-h-screen w-full bg-texture-paper overflow-x-hidden selection:bg-brand-orange/30 p-0">
             <HeroSection />
 
             <div className="relative">
@@ -22,8 +17,6 @@ export function Home() {
             <ImpactSection />
 
             <CommunitySection />
-
-            <Footer />
         </main>
     );
 }
