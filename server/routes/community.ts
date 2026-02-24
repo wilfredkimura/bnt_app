@@ -4,13 +4,22 @@ import { prisma } from '../../src/lib/prisma.js';
 const router = Router();
 
 // GET /api/community/me - Get current user's profile
-router.get('/me', async (req, res) => {
+router.get('/me', async (req: any, res) => {
     try {
-        const email = req.headers['x-user-email'] as string;
-        if (!email) return res.status(401).json({ error: 'Unauthorized' });
+        const clerkId = req.auth?.userId;
+        if (!clerkId) return res.status(401).json({ error: 'Unauthorized - No Clerk ID' });
 
-        const member = await prisma.communityMember.findFirst({
-            where: { email: { equals: email, mode: 'insensitive' } },
+        // Lookup user in Neon by clerkId
+        const user = await prisma.user.findUnique({
+            where: { clerkId }
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User record not found. Please refresh or try again.' });
+        }
+
+        const member = await prisma.communityMember.findUnique({
+            where: { email: user.email },
         });
 
         if (!member) return res.status(404).json({ error: 'Profile not found' });

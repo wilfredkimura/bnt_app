@@ -18,6 +18,13 @@ const PORT = process.env.PORT || 3001;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Debug Logger
+app.use((req, _res, next) => {
+    console.log(`[API] ${req.method} ${req.url}`);
+    next();
+});
+
 app.use(clerkMiddleware as any);
 app.use(recordActivityMiddleware as any);
 

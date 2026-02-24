@@ -7,22 +7,39 @@ export const clerkMiddleware = ClerkExpressWithAuth();
 
 // Middleware to record logins/activity in Neon AND sync user data on-demand
 export const recordActivityMiddleware = async (req: any, _res: any, next: any) => {
+    // 🔍 Trace logging
+    const hasAuthHeader = !!req.headers.authorization;
+    const authType = req.headers.authorization?.split(' ')[0];
+
+    if (hasAuthHeader) {
+        console.log(`[Auth Trace] Token received. Type: ${authType}. Path: ${req.url}`);
+    }
+
     if (req.auth?.userId) {
-        console.log(`[Auth] User active: ${req.auth.userId}`);
+        console.log(`[Auth Trace] Valid User Session: ${req.auth.userId}`);
         try {
             const clerkId = req.auth.userId;
 
-            // 1. Check if we already have this user and when they last synced
+            // 1. Check if we already have this user and their community profile
             const existingUser = await prisma.user.findUnique({
                 where: { clerkId },
                 select: { lastLogin: true, email: true }
             });
 
-            // 2. Only sync from Clerk if user is new OR it's been > 1 hour since last login update
-            const ONE_HOUR = 60 * 60 * 1000;
-            const needsSync = !existingUser || !existingUser.lastLogin || (new Date().getTime() - new Date(existingUser.lastLogin).getTime() > ONE_HOUR);
+            let communityMemberExists = false;
+            if (existingUser?.email) {
+                const member = await prisma.communityMember.findUnique({
+                    where: { email: existingUser.email }
+                });
+                communityMemberExists = !!member;
+            }
+
+            // 2. Only sync from Clerk if user or member is missing OR it's been > 5 mins since last sync
+            const FIVE_MINS = 5 * 60 * 1000;
+            const needsSync = !existingUser || !communityMemberExists || !existingUser.lastLogin || (new Date().getTime() - new Date(existingUser.lastLogin).getTime() > FIVE_MINS);
 
             if (needsSync) {
+                console.log(`[Auth Sync] Syncing user data for ${clerkId}...`);
                 // Fetch user data from Clerk directly
                 const clerkUser = await clerkClient.users.getUser(clerkId);
                 const email = clerkUser.emailAddresses[0]?.emailAddress;

@@ -117,6 +117,7 @@ router.get('/users', async (_req, res) => {
                 id: true,
                 name: true,
                 email: true,
+                clerkId: true,
                 role: true,
                 subscriptionStatus: true,
                 createdAt: true,
@@ -126,6 +127,34 @@ router.get('/users', async (_req, res) => {
     } catch (error) {
         console.error('Error fetching users:', error);
         res.status(500).json({ error: 'Failed to fetch users' });
+    }
+});
+
+// PUT /api/auth/users/:id/role - Update user role (Admin only)
+router.put('/users/:id/role', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { role } = req.body;
+
+        if (!['Admin', 'Volunteer', 'Donor', 'OrganisationLeader'].includes(role)) {
+            return res.status(400).json({ error: 'Invalid role' });
+        }
+
+        const user = await prisma.user.update({
+            where: { id: parseInt(id) },
+            data: { role },
+        });
+
+        // Also update the community member role to keep them in sync
+        await prisma.communityMember.updateMany({
+            where: { email: user.email },
+            data: { role },
+        });
+
+        res.json(user);
+    } catch (error) {
+        console.error('Error updating user role:', error);
+        res.status(500).json({ error: 'Failed to update user role' });
     }
 });
 

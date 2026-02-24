@@ -1,6 +1,3 @@
-// This is your Prisma schema file for Books & Trunks Society
-// Combines website content models with operational/admin models
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,9 +8,201 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// --------------------
-// ENUMS
-// --------------------
+model User {
+  id                 Int                @id @default(autoincrement())
+  email              String             @unique
+  role               Role               @default(Volunteer)
+  subscriptionStatus SubscriptionStatus @default(Inactive)
+  createdAt          DateTime           @default(now())
+  name               String
+  password           String             @default("")
+  clerkId            String?            @unique
+  lastLogin          DateTime?
+  donations          Donation[]
+  requests           UserRequest[]
+
+  @@map("users")
+}
+
+model Book {
+  id             Int            @id @default(autoincrement())
+  title          String
+  author         String
+  curriculum     CurriculumType @default(CBC)
+  isKicdApproved Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  trunkId        Int?
+  trunk          Trunk?         @relation(fields: [trunkId], references: [id])
+
+  @@map("books")
+}
+
+model Trunk {
+  id           Int         @id @default(autoincrement())
+  code         String      @unique
+  status       TrunkStatus @default(Planned)
+  dispatchedAt DateTime?
+  locationId   Int?
+  books        Book[]
+  location     Location?   @relation(fields: [locationId], references: [id])
+
+  @@map("trunks")
+}
+
+model Location {
+  id          Int     @id @default(autoincrement())
+  name        String
+  latitude    Float
+  longitude   Float
+  description String?
+  partnerOrg  String?
+  trunks      Trunk[]
+
+  @@map("locations")
+}
+
+model Report {
+  id         Int            @id @default(autoincrement())
+  title      String
+  filePath   String
+  category   ReportCategory @default(Financial)
+  uploadedAt DateTime       @default(now())
+
+  @@map("reports")
+}
+
+model Donation {
+  id        Int      @id @default(autoincrement())
+  amount    Decimal
+  currency  Currency @default(KES)
+  createdAt DateTime @default(now())
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+
+  @@map("donations")
+}
+
+model AdminConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admin_config")
+}
+
+model Story {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  excerpt   String?
+  content   String
+  author    String
+  location  String?
+  imageUrl  String?
+  published Boolean  @default(false)
+  featured  Boolean  @default(false)
+  readTime  Int      @default(5)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([published, featured])
+  @@index([slug])
+  @@map("stories")
+}
+
+model ImpactMetric {
+  id           String   @id @default(cuid())
+  metricType   String
+  value        Int
+  label        String
+  description  String?
+  icon         String?
+  displayOrder Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([isActive, displayOrder])
+  @@map("impact_metrics")
+}
+
+model GalleryItem {
+  id           String    @id @default(cuid())
+  imageUrl     String
+  caption      String?
+  location     String?
+  eventDate    DateTime?
+  tags         String[]
+  featured     Boolean   @default(false)
+  displayOrder Int       @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  eventId      String?
+  event        Event?    @relation(fields: [eventId], references: [id])
+
+  @@index([featured, displayOrder])
+  @@index([eventId])
+  @@map("gallery_items")
+}
+
+model CommunityMember {
+  id         String   @id @default(cuid())
+  name       String
+  role       String
+  bio        String?
+  photoUrl   String?
+  email      String?  @unique
+  phone      String?
+  location   String?
+  joinedDate DateTime @default(now())
+  isActive   Boolean  @default(true)
+  featured   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  tags       String[]
+
+  @@index([isActive, featured])
+  @@map("community_members")
+}
+
+model Event {
+  id               String        @id @default(cuid())
+  title            String
+  description      String
+  location         String
+  eventDate        DateTime
+  endDate          DateTime?
+  imageUrl         String?
+  eventType        String
+  attendees        Int           @default(0)
+  booksDistributed Int           @default(0)
+  published        Boolean       @default(false)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  galleryItems     GalleryItem[]
+
+  @@index([published, eventDate])
+  @@map("events")
+}
+
+model UserRequest {
+  id        String        @id @default(cuid())
+  type      RequestType   @default(Custom)
+  subject   String
+  message   String
+  status    RequestStatus @default(Pending)
+  adminNote String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  userId    Int
+  user      User          @relation(fields: [userId], references: [id])
+
+  @@index([status])
+  @@index([userId])
+  @@map("user_requests")
+}
 
 enum CurriculumType {
   CBC
@@ -61,232 +250,4 @@ enum RequestStatus {
 enum RequestType {
   Petition
   Custom
-}
-
-// --------------------
-// USER & AUTH MODELS
-// --------------------
-
-model User {
-  id                 Int                @id @default(autoincrement())
-  clerkId            String?            @unique
-  name               String
-  email              String             @unique
-  password           String             @default("") // Keep for legacy/fallback, but hashed
-  role               Role               @default(Volunteer)
-  subscriptionStatus SubscriptionStatus @default(Inactive)
-  lastLogin          DateTime?
-  createdAt          DateTime           @default(now())
-
-  // Relations
-  donations Donation[]
-  requests  UserRequest[]
-
-  @@map("users")
-}
-
-// --------------------
-// OPERATIONAL MODELS
-// --------------------
-
-model Book {
-  id             Int            @id @default(autoincrement())
-  title          String
-  author         String
-  curriculum     CurriculumType @default(CBC)
-  isKicdApproved Boolean        @default(false)
-  createdAt      DateTime       @default(now())
-
-  // Relations
-  trunkId Int?
-  trunk   Trunk? @relation(fields: [trunkId], references: [id])
-
-  @@map("books")
-}
-
-model Trunk {
-  id           Int         @id @default(autoincrement())
-  code         String      @unique // e.g., "TRUNK-001"
-  status       TrunkStatus @default(Planned)
-  dispatchedAt DateTime?
-
-  // Relations
-  locationId Int?
-  location   Location? @relation(fields: [locationId], references: [id])
-  books      Book[]
-
-  @@map("trunks")
-}
-
-model Location {
-  id          Int     @id @default(autoincrement())
-  name        String // e.g. "ShedALight Institute"
-  latitude    Float
-  longitude   Float
-  description String?
-  partnerOrg  String? // e.g., "PCEA Upendo Church"
-
-  // Relations
-  trunks Trunk[]
-
-  @@map("locations")
-}
-
-model Report {
-  id         Int            @id @default(autoincrement())
-  title      String
-  filePath   String
-  category   ReportCategory @default(Financial)
-  uploadedAt DateTime       @default(now())
-
-  @@map("reports")
-}
-
-model Donation {
-  id        Int      @id @default(autoincrement())
-  amount    Decimal
-  currency  Currency @default(KES)
-  createdAt DateTime @default(now())
-
-  // Relations
-  userId Int?
-  user   User? @relation(fields: [userId], references: [id])
-
-  @@map("donations")
-}
-
-// AdminConfig model - for storing admin credentials
-model AdminConfig {
-  id        String   @id @default(cuid())
-  key       String   @unique // e.g., "admin_password"
-  value     String // password value
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("admin_config")
-}
-
-// --------------------
-// WEBSITE CONTENT MODELS
-// --------------------
-
-// Story model - for community stories and blog posts
-model Story {
-  id        String   @id @default(cuid())
-  title     String
-  slug      String   @unique // URL-friendly version of title
-  excerpt   String?  @db.Text // Short preview for blog list
-  content   String   @db.Text // Full blog content
-  author    String
-  location  String?
-  imageUrl  String? // Featured image
-  published Boolean  @default(false)
-  featured  Boolean  @default(false)
-  readTime  Int      @default(5) // Estimated reading time in minutes
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([published, featured])
-  @@index([slug])
-  @@map("stories")
-}
-
-// ImpactMetric model - for tracking impact statistics
-model ImpactMetric {
-  id           String   @id @default(cuid())
-  metricType   String // e.g., "books_distributed", "children_reached", "schools_visited"
-  value        Int
-  label        String
-  description  String?  @db.Text
-  icon         String? // icon identifier
-  displayOrder Int      @default(0)
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  @@index([isActive, displayOrder])
-  @@map("impact_metrics")
-}
-
-// GalleryItem model - for photo gallery
-model GalleryItem {
-  id           String    @id @default(cuid())
-  imageUrl     String
-  caption      String?
-  location     String?
-  eventDate    DateTime?
-  tags         String[] // array of tags for filtering
-  featured     Boolean   @default(false)
-  displayOrder Int       @default(0)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  eventId String?
-  event   Event?  @relation(fields: [eventId], references: [id], onDelete: SetNull)
-
-  @@index([featured, displayOrder])
-  @@index([eventId])
-  @@map("gallery_items")
-}
-
-// CommunityMember model - for volunteers, team members, and supporters
-model CommunityMember {
-  id         String   @id @default(cuid())
-  name       String
-  role       String // e.g., "Volunteer", "Team Member", "Board Member"
-  bio        String?  @db.Text
-  photoUrl   String?
-  email      String?  @unique
-  phone      String?
-  location   String?
-  tags       String[] // Custom tags for members
-  joinedDate DateTime @default(now())
-  isActive   Boolean  @default(true)
-  featured   Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  @@index([isActive, featured])
-  @@map("community_members")
-}
-
-// Event model - for community events and activities
-model Event {
-  id               String    @id @default(cuid())
-  title            String
-  description      String    @db.Text
-  location         String
-  eventDate        DateTime
-  endDate          DateTime?
-  imageUrl         String?
-  eventType        String // e.g., "Book Distribution", "Reading Session", "Community Gathering"
-  attendees        Int       @default(0)
-  booksDistributed Int       @default(0)
-  published        Boolean   @default(false)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-
-  galleryItems GalleryItem[]
-
-  @@index([published, eventDate])
-  @@map("events")
-}
-
-model UserRequest {
-  id        String        @id @default(cuid())
-  type      RequestType   @default(Custom)
-  subject   String
-  message   String        @db.Text
-  status    RequestStatus @default(Pending)
-  adminNote String?       @db.Text
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-
-  // Relations
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
-
-  @@index([status])
-  @@index([userId])
-  @@map("user_requests")
 }

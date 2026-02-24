@@ -4,17 +4,31 @@ import { prisma } from '../../src/lib/prisma.js';
 const router = Router();
 
 // POST /api/requests - Submit a new request
-router.post('/', async (req, res) => {
+router.post('/', async (req: any, res) => {
     try {
-        const { userId, type, subject, message } = req.body;
+        const { type, subject, message } = req.body;
+        const clerkId = req.auth?.userId;
 
-        if (!userId || !type || !subject || !message) {
+        if (!clerkId) {
+            return res.status(401).json({ error: 'Unauthorized - Login required' });
+        }
+
+        if (!type || !subject || !message) {
             return res.status(400).json({ error: 'All fields are required' });
+        }
+
+        // Find user by clerkId to get their numeric Neon ID
+        const userRec = await prisma.user.findUnique({
+            where: { clerkId }
+        });
+
+        if (!userRec) {
+            return res.status(404).json({ error: 'User record not found in database' });
         }
 
         const request = await prisma.userRequest.create({
             data: {
-                userId: parseInt(userId.toString()),
+                userId: userRec.id,
                 type,
                 subject,
                 message,
@@ -38,9 +52,10 @@ router.post('/', async (req, res) => {
 });
 
 // GET /api/requests - Get all requests (Admin only)
-router.get('/', async (_req, res) => {
+router.get('/', async (req: any, res) => {
     try {
-        // In a real app, we would verify admin role here
+        if (!req.auth?.userId) return res.status(401).json({ error: 'Unauthorized' });
+
         const requests = await prisma.userRequest.findMany({
             include: {
                 user: {
@@ -61,7 +76,7 @@ router.get('/', async (_req, res) => {
 });
 
 // GET /api/requests/user/:userId - Get requests for a specific user
-router.get('/user/:userId', async (req, res) => {
+router.get('/user/:userId', async (req: any, res) => {
     try {
         const { userId } = req.params;
         const requests = await prisma.userRequest.findMany({

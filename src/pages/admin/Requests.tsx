@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '@clerk/clerk-react';
 import { Doodle } from '../../components/ui/Doodle';
 
 interface UserRequest {
@@ -16,6 +17,7 @@ interface UserRequest {
 }
 
 export function AdminRequests() {
+    const { getToken } = useAuth();
     const [requests, setRequests] = useState<UserRequest[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -23,7 +25,10 @@ export function AdminRequests() {
 
     const fetchRequests = async () => {
         try {
-            const response = await fetch('/api/requests');
+            const token = await getToken();
+            const response = await fetch('/api/requests', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             if (response.ok) {
                 const data = await response.json();
                 setRequests(data);
@@ -44,9 +49,13 @@ export function AdminRequests() {
     const handleUpdateStatus = async (id: string, status: string, adminNote: string) => {
         setUpdatingId(id);
         try {
+            const token = await getToken();
             const response = await fetch(`/api/requests/${id}`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({ status, adminNote }),
             });
 
@@ -90,9 +99,9 @@ export function AdminRequests() {
                                             {request.type}
                                         </span>
                                         <span className={`px-3 py-1 rounded-full text-sm font-marker ${request.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
-                                                request.status === 'InProgress' ? 'bg-blue-100 text-blue-700' :
-                                                    request.status === 'Completed' ? 'bg-green-100 text-green-700' :
-                                                        'bg-red-100 text-red-700'
+                                            request.status === 'InProgress' ? 'bg-blue-100 text-blue-700' :
+                                                request.status === 'Completed' ? 'bg-green-100 text-green-700' :
+                                                    'bg-red-100 text-red-700'
                                             }`}>
                                             {request.status}
                                         </span>
@@ -128,8 +137,8 @@ export function AdminRequests() {
                                                 onClick={() => handleUpdateStatus(request.id, status, request.adminNote || '')}
                                                 disabled={updatingId === request.id}
                                                 className={`px-4 py-2 rounded-lg font-marker text-sm transition-all ${request.status === status
-                                                        ? 'bg-brand-brown text-white shadow-md'
-                                                        : 'bg-white text-brand-brown border-2 border-brand-brown/10 hover:border-brand-orange'
+                                                    ? 'bg-brand-brown text-white shadow-md'
+                                                    : 'bg-white text-brand-brown border-2 border-brand-brown/10 hover:border-brand-orange'
                                                     }`}
                                             >
                                                 {status}

@@ -1,16 +1,39 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
     SignedIn,
     SignedOut,
     SignInButton,
     UserButton,
-    useUser
+    useUser,
+    useAuth
 } from '@clerk/clerk-react';
 
 export function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { user, isSignedIn } = useUser();
+    const { getToken } = useAuth();
+    const syncChecked = useRef(false);
+
+    // Auto-sync trigger: When user logs in, ping the API to ensure they exist in Neon
+    useEffect(() => {
+        if (isSignedIn && !syncChecked.current) {
+            const syncUser = async () => {
+                try {
+                    const token = await getToken();
+                    // Ping the health endpoint with the token to trigger recordActivityMiddleware
+                    await fetch('/api/health', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    console.log('[Navbar] User sync triggered');
+                    syncChecked.current = true;
+                } catch (err) {
+                    console.error('[Navbar] Sync fail:', err);
+                }
+            };
+            syncUser();
+        }
+    }, [isSignedIn, getToken]);
 
     // Check for admin role in metadata (if using Clerk roles) or fallback to name/email check
     const isAdmin = user?.publicMetadata?.role === 'Admin' ||

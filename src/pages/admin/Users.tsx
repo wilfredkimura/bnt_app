@@ -1,19 +1,22 @@
 import { useState, useEffect } from 'react';
-import { getAllUsers } from '../../lib/api';
+import { useAuth } from '@clerk/clerk-react';
 
 interface User {
     id: number;
     name: string;
     email: string;
-    role: 'Admin' | 'Volunteer' | 'Donor';
+    clerkId: string | null;
+    role: 'Admin' | 'Volunteer' | 'Donor' | 'OrganisationLeader';
     subscriptionStatus: 'Active' | 'Inactive';
     createdAt: string;
 }
 
 export function AdminUsers() {
+    const { getToken } = useAuth();
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [updatingId, setUpdatingId] = useState<number | null>(null);
 
     useEffect(() => {
         loadUsers();
@@ -21,13 +24,42 @@ export function AdminUsers() {
 
     const loadUsers = async () => {
         try {
-            const data = await getAllUsers();
+            const token = await getToken();
+            const res = await fetch('/api/auth/users', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error('Failed to fetch');
+            const data = await res.json();
             setUsers(data);
         } catch (err) {
             console.error('Failed to load users:', err);
             setError('Failed to load users. Please try again.');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleRoleUpdate = async (id: number, role: string) => {
+        setUpdatingId(id);
+        try {
+            const token = await getToken();
+            const res = await fetch(`/api/auth/users/${id}/role`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ role }),
+            });
+            if (res.ok) {
+                await loadUsers();
+            } else {
+                alert('Failed to update role');
+            }
+        } catch (err) {
+            alert('Error updating role');
+        } finally {
+            setUpdatingId(null);
         }
     };
 
@@ -97,7 +129,7 @@ export function AdminUsers() {
                         <thead className="bg-brand-brown/10 border-b-2 border-brand-brown/20">
                             <tr>
                                 <th className="px-6 py-4 text-xl text-brand-brown">Name</th>
-                                <th className="px-6 py-4 text-xl text-brand-brown">Email</th>
+                                <th className="px-6 py-4 text-xl text-brand-brown">Email / ID</th>
                                 <th className="px-6 py-4 text-xl text-brand-brown">Role</th>
                                 <th className="px-6 py-4 text-xl text-brand-brown">Status</th>
                                 <th className="px-6 py-4 text-xl text-brand-brown">Joined</th>
@@ -106,15 +138,29 @@ export function AdminUsers() {
                         <tbody className="divide-y divide-brand-brown/10">
                             {users.map((user) => (
                                 <tr key={user.id} className="hover:bg-brand-brown/5 transition-colors">
-                                    <td className="px-6 py-4 text-lg text-brand-brown font-bold">{user.name}</td>
-                                    <td className="px-6 py-4 text-lg text-brand-brown">{user.email}</td>
+                                    <td className="px-6 py-4 text-lg text-brand-brown font-bold">
+                                        {user.name}
+                                        {user.clerkId && <span className="ml-2 text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Clerk</span>}
+                                    </td>
+                                    <td className="px-6 py-4 text-lg text-brand-brown">
+                                        <div>{user.email}</div>
+                                        <div className="text-xs text-brand-brown/40 font-mono">{user.clerkId || 'Legacy User'}</div>
+                                    </td>
                                     <td className="px-6 py-4">
-                                        <span className={`inline-block px-3 py-1 rounded-full text-sm font-bold ${user.role === 'Admin' ? 'bg-brand-burgundy text-brand-cream' :
-                                                user.role === 'Volunteer' ? 'bg-brand-orange text-brand-brown' :
-                                                    'bg-pink-100 text-pink-700'
-                                            }`}>
-                                            {user.role}
-                                        </span>
+                                        <select
+                                            value={user.role}
+                                            disabled={updatingId === user.id}
+                                            onChange={(e) => handleRoleUpdate(user.id, e.target.value)}
+                                            className={`px-3 py-1 rounded-full text-sm font-bold border-2 outline-none appearance-none cursor-pointer ${user.role === 'Admin' ? 'bg-brand-burgundy text-brand-cream border-brand-burgundy' :
+                                                user.role === 'Volunteer' ? 'bg-brand-orange text-brand-brown border-brand-orange' :
+                                                    'bg-pink-100 text-pink-700 border-pink-200'
+                                                }`}
+                                        >
+                                            <option value="Volunteer">Volunteer</option>
+                                            <option value="Admin">Admin</option>
+                                            <option value="Donor">Donor</option>
+                                            <option value="OrganisationLeader">Leader</option>
+                                        </select>
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`inline-block px-3 py-1 rounded-full text-sm font-bold ${user.subscriptionStatus === 'Active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'

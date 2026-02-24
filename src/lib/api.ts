@@ -57,9 +57,10 @@ export async function updateStory(id: string, data: any) {
     return res.json();
 }
 
-export async function deleteStory(id: string) {
+export async function deleteStory(id: string, token?: string | null) {
     const res = await fetch(`${API_URL}/stories/${id}`, {
         method: 'DELETE',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     });
     if (!res.ok) throw new Error('Failed to delete story');
 }
@@ -105,8 +106,10 @@ export async function deleteGalleryItem(id: string) {
 // STATS
 // ==================
 
-export async function getDashboardStats() {
-    const res = await fetch(`${API_URL}/stats`);
+export async function getDashboardStats(token?: string | null) {
+    const res = await fetch(`${API_URL}/stats`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    });
     if (!res.ok) throw new Error('Failed to fetch stats');
     return res.json();
 }
