@@ -1,6 +1,8 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import storiesRouter from './routes/stories.js';
 import galleryRouter from './routes/gallery.js';
 import statsRouter from './routes/stats.js';
@@ -9,8 +11,6 @@ import requestsRouter from './routes/requests.js';
 import communityRouter from './routes/community.js';
 
 import { clerkMiddleware, recordActivityMiddleware } from './middleware/clerk.js';
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;

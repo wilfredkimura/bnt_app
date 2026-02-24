@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useUser } from '@clerk/clerk-react';
+import { useUser, useAuth } from '@clerk/clerk-react';
 import { Doodle } from '../components/ui/Doodle';
 
 interface CommunityMember {
@@ -15,6 +15,7 @@ interface CommunityMember {
 
 export function Profile() {
     const { user } = useUser();
+    const { getToken } = useAuth();
     const [profile, setProfile] = useState<CommunityMember | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -34,7 +35,12 @@ export function Profile() {
 
     const fetchProfile = async () => {
         try {
-            const response = await fetch('/api/community/me');
+            const token = await getToken();
+            const response = await fetch('/api/community/me', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             if (response.ok) {
                 const data = await response.json();
                 setProfile(data);
@@ -56,10 +62,12 @@ export function Profile() {
         setMessage(null);
 
         try {
+            const token = await getToken();
             const response = await fetch('/api/community/me', {
                 method: 'PATCH',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({ bio, photoUrl, name, location }),
             });
@@ -154,7 +162,7 @@ export function Profile() {
                                 </div>
                                 {profile?.tags && profile.tags.length > 0 && (
                                     <div className="flex flex-wrap gap-2">
-                                        {profile.tags.map(tag => (
+                                        {profile.tags.map((tag: string) => (
                                             <span key={tag} className="px-3 py-1 bg-brand-orange/10 border-2 border-brand-orange/20 rounded-full font-hand text-sm text-brand-brown">
                                                 #{tag}
                                             </span>

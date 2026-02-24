@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { useUser } from '@clerk/clerk-react';
+import { useUser, useAuth } from '@clerk/clerk-react';
 import { Doodle } from '../components/ui/Doodle';
 
 export function SubmitRequest() {
     const { user } = useUser();
+    const { getToken } = useAuth();
     const [type, setType] = useState<'Petition' | 'Custom'>('Custom');
     const [subject, setSubject] = useState('');
     const [message, setMessage] = useState('');
@@ -18,9 +19,13 @@ export function SubmitRequest() {
         setStatus(null);
 
         try {
+            const token = await getToken();
             const response = await fetch('/api/requests', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify({
                     userId: user.id, // Clerk's user ID
                     type,

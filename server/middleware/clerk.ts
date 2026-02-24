@@ -8,6 +8,7 @@ export const clerkMiddleware = ClerkExpressWithAuth();
 // Middleware to record logins/activity in Neon AND sync user data on-demand
 export const recordActivityMiddleware = async (req: any, _res: any, next: any) => {
     if (req.auth?.userId) {
+        console.log(`[Auth] User active: ${req.auth.userId}`);
         try {
             const clerkId = req.auth.userId;
 
