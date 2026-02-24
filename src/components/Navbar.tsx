@@ -78,27 +78,16 @@ export function Navbar() {
                                 </Link>
                             )}
                             <div className="flex items-center gap-3 ml-2">
-                                <UserButton afterSignOutUrl="/" />
-                                <span className="font-hand text-lg text-brand-brown">
-                                    👋 {user?.firstName || user?.username}
-                                </span>
+                                <UserButton afterSignOutUrl="/" showName />
                             </div>
                         </SignedIn>
 
                         <SignedOut>
-                            <div className="flex items-center gap-4">
-                                <SignInButton mode="modal">
-                                    <button className="font-hand text-lg text-brand-brown hover:text-brand-burgundy transition-colors">
-                                        Login
-                                    </button>
-                                </SignInButton>
-                                <Link
-                                    to="/signup"
-                                    className="font-hand text-lg bg-brand-burgundy text-brand-cream px-4 py-2 rounded-lg hover:bg-brand-brown transition-all"
-                                >
-                                    Sign Up
-                                </Link>
-                            </div>
+                            <SignInButton mode="modal">
+                                <button className="font-marker text-xl bg-brand-burgundy text-brand-cream px-6 py-2 rounded-full hover:shadow-lg hover:scale-105 transition-all duration-300">
+                                    Join Community
+                                </button>
+                            </SignInButton>
                         </SignedOut>
                     </div>
 
@@ -145,10 +134,7 @@ export function Navbar() {
                         <SignedIn>
                             <div className="pt-3 border-t-2 border-brand-brown/10">
                                 <div className="flex items-center gap-3 mb-4">
-                                    <UserButton afterSignOutUrl="/" />
-                                    <p className="font-hand text-lg text-brand-brown">
-                                        👋 {user?.firstName}
-                                    </p>
+                                    <UserButton afterSignOutUrl="/" showName />
                                 </div>
                                 {isAdmin && (
                                     <Link
@@ -167,18 +153,11 @@ export function Navbar() {
                                 <SignInButton mode="modal">
                                     <button
                                         onClick={() => setIsMenuOpen(false)}
-                                        className="w-full font-hand text-lg text-center text-brand-brown hover:text-brand-burgundy transition-colors py-2"
+                                        className="w-full font-marker text-xl bg-brand-burgundy text-brand-cream px-4 py-3 rounded-xl hover:bg-brand-brown transition-all"
                                     >
-                                        Login
+                                        Join Community
                                     </button>
                                 </SignInButton>
-                                <Link
-                                    to="/signup"
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="block font-hand text-lg bg-brand-burgundy text-brand-cream px-4 py-2 rounded-lg hover:bg-brand-brown transition-all text-center"
-                                >
-                                    Sign Up
-                                </Link>
                             </div>
                         </SignedOut>
                     </div>
