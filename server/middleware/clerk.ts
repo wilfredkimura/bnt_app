@@ -11,52 +11,70 @@ export const recordActivityMiddleware = async (req: any, _res: any, next: any) =
         try {
             const clerkId = req.auth.userId;
 
-            // 1. Fetch user data from Clerk directly
-            const clerkUser = await clerkClient.users.getUser(clerkId);
-            const email = clerkUser.emailAddresses[0]?.emailAddress;
-            const name = `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || email?.split('@')[0];
-            const photoUrl = clerkUser.imageUrl;
+            // 1. Check if we already have this user and when they last synced
+            const existingUser = await prisma.user.findUnique({
+                where: { clerkId },
+                select: { lastLogin: true, email: true }
+            });
 
-            if (email) {
-                await prisma.$transaction(async (tx) => {
-                    // 2. Upsert User in Neon
-                    const user = await tx.user.upsert({
-                        where: { email },
-                        update: {
-                            clerkId,
-                            name,
-                            lastLogin: new Date()
-                        },
-                        create: {
-                            clerkId,
-                            email,
-                            name,
-                            password: '', // Clerk handles auth
-                            role: 'Volunteer',
-                            lastLogin: new Date()
-                        },
-                    });
+            // 2. Only sync from Clerk if user is new OR it's been > 1 hour since last login update
+            const ONE_HOUR = 60 * 60 * 1000;
+            const needsSync = !existingUser || !existingUser.lastLogin || (new Date().getTime() - new Date(existingUser.lastLogin).getTime() > ONE_HOUR);
 
-                    // 3. Upsert CommunityMember in Neon
-                    await tx.communityMember.upsert({
-                        where: { email },
-                        update: {
-                            name,
-                            photoUrl,
-                        },
-                        create: {
-                            name,
-                            email,
-                            photoUrl,
-                            role: user.role,
-                            isActive: true,
-                        },
+            if (needsSync) {
+                // Fetch user data from Clerk directly
+                const clerkUser = await clerkClient.users.getUser(clerkId);
+                const email = clerkUser.emailAddresses[0]?.emailAddress;
+                const name = `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || email?.split('@')[0];
+                const photoUrl = clerkUser.imageUrl;
+
+                if (email) {
+                    await prisma.$transaction(async (tx) => {
+                        // Upsert User in Neon
+                        const user = await tx.user.upsert({
+                            where: { email },
+                            update: {
+                                clerkId,
+                                name,
+                                lastLogin: new Date()
+                            },
+                            create: {
+                                clerkId,
+                                email,
+                                name,
+                                password: '', // Clerk handles auth
+                                role: 'Volunteer',
+                                lastLogin: new Date()
+                            },
+                        });
+
+                        // Upsert CommunityMember in Neon
+                        await tx.communityMember.upsert({
+                            where: { email },
+                            update: {
+                                name,
+                                photoUrl,
+                            },
+                            create: {
+                                name,
+                                email,
+                                photoUrl,
+                                role: user.role,
+                                isActive: true,
+                            },
+                        });
                     });
+                    console.log(`Synced user ${email} from Clerk to Neon`);
+                }
+            } else {
+                // Just update activity timestamp without fetching from Clerk
+                await prisma.user.update({
+                    where: { clerkId },
+                    data: { lastLogin: new Date() }
                 });
             }
         } catch (error) {
             console.error('Failed to sync user or record activity:', error);
-            // Don't block the request if this sync fails
         }
     }
     next();

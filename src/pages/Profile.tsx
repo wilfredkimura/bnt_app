@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useUser } from '@clerk/clerk-react';
 import { Doodle } from '../components/ui/Doodle';
 
 interface CommunityMember {
@@ -14,7 +14,7 @@ interface CommunityMember {
 }
 
 export function Profile() {
-    const { user } = useAuth();
+    const { user } = useUser();
     const [profile, setProfile] = useState<CommunityMember | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -34,9 +34,7 @@ export function Profile() {
 
     const fetchProfile = async () => {
         try {
-            const response = await fetch('/api/community/me', {
-                headers: { 'x-user-email': user?.email || '' }
-            });
+            const response = await fetch('/api/community/me');
             if (response.ok) {
                 const data = await response.json();
                 setProfile(data);
@@ -61,8 +59,7 @@ export function Profile() {
             const response = await fetch('/api/community/me', {
                 method: 'PATCH',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'x-user-email': user?.email || ''
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ bio, photoUrl, name, location }),
             });
@@ -90,18 +87,18 @@ export function Profile() {
                 <Doodle type="underline" className="absolute -bottom-2 left-0 w-full text-brand-orange h-4" />
             </div>
 
-            <div className="bg-brand-cream border-4 border-brand-brown/10 rounded-3xl p-8 shadow-xl relative overflow-hidden">
+            <div className="bg-white border-4 border-brand-brown/10 rounded-3xl p-8 shadow-xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-brand-orange/10 transform rotate-12 -mr-16 -mt-16 rounded-full" />
 
                 <form onSubmit={handleSave} className="relative z-10 space-y-8">
                     <div className="flex flex-col md:flex-row gap-8 items-start">
                         <div className="w-full md:w-1/3 flex flex-col items-center gap-4">
-                            <div className="w-48 h-48 rounded-full border-4 border-brand-orange overflow-hidden bg-white shadow-lg transform hover:scale-105 transition-transform">
+                            <div className="w-48 h-48 rounded-full border-4 border-brand-orange overflow-hidden bg-brand-cream shadow-lg transform hover:scale-105 transition-transform">
                                 {photoUrl ? (
                                     <img src={photoUrl} alt={name} className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-6xl text-brand-brown/20 bg-brand-brown/5">
-                                        👤
+                                    <div className="w-full h-full flex items-center justify-center text-6xl text-brand-brown/20 bg-brand-brown/5 font-hand">
+                                        {name?.charAt(0) || '👤'}
                                     </div>
                                 )}
                             </div>
@@ -112,9 +109,8 @@ export function Profile() {
                                     value={photoUrl}
                                     onChange={(e) => setPhotoUrl(e.target.value)}
                                     placeholder="https://example.com/photo.jpg"
-                                    className="w-full px-4 py-2 rounded-xl border-2 border-brand-brown/20 focus:border-brand-orange outline-none font-hand text-lg bg-white/50"
+                                    className="w-full px-4 py-2 rounded-xl border-2 border-brand-brown/20 focus:border-brand-burgundy outline-none font-hand text-lg bg-white/50"
                                 />
-                                <p className="text-sm text-brand-brown/50 mt-2 font-hand italic text-center">Cloudinary integration coming soon!</p>
                             </div>
                         </div>
 
@@ -126,7 +122,7 @@ export function Profile() {
                                         type="text"
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
-                                        className="w-full px-4 py-2 rounded-xl border-2 border-brand-brown/20 focus:border-brand-orange outline-none font-hand text-lg"
+                                        className="w-full px-4 py-2 rounded-xl border-2 border-brand-brown/20 focus:border-brand-burgundy outline-none font-hand text-lg"
                                         required
                                     />
                                 </div>
@@ -137,7 +133,7 @@ export function Profile() {
                                         value={location}
                                         onChange={(e) => setLocation(e.target.value)}
                                         placeholder="City, Country"
-                                        className="w-full px-4 py-2 rounded-xl border-2 border-brand-brown/20 focus:border-brand-orange outline-none font-hand text-lg"
+                                        className="w-full px-4 py-2 rounded-xl border-2 border-brand-brown/20 focus:border-brand-burgundy outline-none font-hand text-lg"
                                     />
                                 </div>
                             </div>
@@ -148,7 +144,7 @@ export function Profile() {
                                     value={bio}
                                     onChange={(e) => setBio(e.target.value)}
                                     placeholder="Tell us a bit about your journey with Books & Trunks..."
-                                    className="w-full px-4 py-2 h-40 rounded-xl border-2 border-brand-brown/20 focus:border-brand-orange outline-none font-hand text-lg resize-none"
+                                    className="w-full px-4 py-2 h-40 rounded-xl border-2 border-brand-brown/20 focus:border-brand-burgundy outline-none font-hand text-lg resize-none"
                                 />
                             </div>
 
@@ -170,7 +166,7 @@ export function Profile() {
                     </div>
 
                     {message && (
-                        <div className={`p-4 rounded-xl font-hand text-lg text-center ${message.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                        <div className={`p-4 rounded-xl font-hand text-lg text-center ${message.type === 'success' ? 'bg-green-100 text-green-800 border-2 border-green-500' : 'bg-red-100 text-red-800 border-2 border-red-500'}`}>
                             {message.text}
                         </div>
                     )}
@@ -179,7 +175,7 @@ export function Profile() {
                         <button
                             type="submit"
                             disabled={isSaving}
-                            className={`px-12 py-4 bg-brand-burgundy text-brand-cream rounded-2xl font-marker text-2xl shadow-lg border-b-8 border-brand-brown hover:translate-y-1 hover:border-b-4 transition-all active:translate-y-2 active:border-b-0 ${isSaving ? 'opacity-50' : ''}`}
+                            className={`px-12 py-4 bg-brand-orange text-white rounded-2xl font-marker text-2xl shadow-[4px_4px_0px_#4A3728] active:translate-y-1 active:shadow-none transition-all disabled:opacity-50`}
                         >
                             {isSaving ? 'Saving...' : '✨ Save My Profile'}
                         </button>

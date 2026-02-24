@@ -5,8 +5,7 @@ import { StoryDetail } from './pages/StoryDetail';
 import { Impact } from './pages/Impact';
 import { Gallery } from './pages/Gallery';
 import { GetInvolved } from './pages/GetInvolved';
-import { Login } from './pages/Login';
-import { Signup } from './pages/Signup';
+import { Login, Signup } from './pages/Login';
 import { SubmitRequest } from './pages/SubmitRequest';
 
 // Admin imports
@@ -22,58 +21,64 @@ import { Profile } from './pages/Profile';
 import { Members } from './pages/Members';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
+import { RootLayout } from './components/RootLayout';
+
 export const router = createBrowserRouter([
-    // Public routes
     {
         path: '/',
-        element: <Home />,
+        element: <RootLayout />,
+        children: [
+            {
+                index: true,
+                element: <Home />,
+            },
+            {
+                path: 'stories',
+                element: <Stories />,
+            },
+            {
+                path: 'stories/:slug',
+                element: <StoryDetail />,
+            },
+            {
+                path: 'impact',
+                element: <Impact />,
+            },
+            {
+                path: 'gallery',
+                element: <Gallery />,
+            },
+            {
+                path: 'get-involved',
+                element: <GetInvolved />,
+            },
+            {
+                path: 'login',
+                element: <Login />,
+            },
+            {
+                path: 'signup',
+                element: <Signup />,
+            },
+            {
+                path: 'requests',
+                element: <ProtectedRoute><SubmitRequest /></ProtectedRoute>,
+            },
+            {
+                path: 'members',
+                element: <Members />
+            },
+            {
+                path: 'profile',
+                element: <ProtectedRoute><Profile /></ProtectedRoute>
+            },
+        ]
     },
-    {
-        path: '/stories',
-        element: <Stories />,
-    },
-    {
-        path: '/stories/:slug',
-        element: <StoryDetail />,
-    },
-    {
-        path: '/impact',
-        element: <Impact />,
-    },
-    {
-        path: '/gallery',
-        element: <Gallery />,
-    },
-    {
-        path: '/get-involved',
-        element: <GetInvolved />,
-    },
-    {
-        path: '/login',
-        element: <Login />,
-    },
-    {
-        path: '/signup',
-        element: <Signup />,
-    },
-    {
-        path: '/requests',
-        element: <SubmitRequest />,
-    },
-
-    // Admin routes (protected)
-    {
-        path: '/members',
-        element: <Members />
-    },
-    {
-        path: '/profile',
-        element: <ProtectedRoute><Profile /></ProtectedRoute>
-    },
+    // Admin routes (protected) - These use their own AdminLayout
     {
         path: '/admin',
         element: (
-            <ProtectedRoute>
+            <ProtectedRoute adminOnly>
                 <AdminLayout />
             </ProtectedRoute>
         ),
