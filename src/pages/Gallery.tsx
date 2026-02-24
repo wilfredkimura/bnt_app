@@ -1,62 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { Polaroid } from '../components/ui/Polaroid';
 import { Doodle } from '../components/ui/Doodle';
+import { getAllGalleryItems } from '../lib/api';
+import type { GalleryItem } from '@prisma/client';
 
 export function Gallery() {
+    const [images, setImages] = useState<GalleryItem[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
-    const tags = ['All', 'Book Distribution', 'Reading Sessions', 'Community Events', 'School Visits'];
+    useEffect(() => {
+        const fetchGallery = async () => {
+            try {
+                const data = await getAllGalleryItems();
+                setImages(data);
+            } catch (err) {
+                console.error('Failed to fetch gallery:', err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchGallery();
+    }, []);
 
-    const galleryItems = [
-        {
-            id: 1,
-            imageUrl: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&auto=format&fit=crop',
-            caption: 'First book distribution at ShedALight Institute',
-            location: 'Nairobi',
-            tags: ['Book Distribution', 'School Visits'],
-        },
-        {
-            id: 2,
-            imageUrl: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800&auto=format&fit=crop',
-            caption: 'Children discovering new stories',
-            location: 'Kisumu',
-            tags: ['Reading Sessions', 'School Visits'],
-        },
-        {
-            id: 3,
-            imageUrl: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800&auto=format&fit=crop',
-            caption: 'Community reading program launch',
-            location: 'Mombasa',
-            tags: ['Community Events', 'Reading Sessions'],
-        },
-        {
-            id: 4,
-            imageUrl: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&auto=format&fit=crop',
-            caption: 'Volunteers organizing book trunks',
-            location: 'Nakuru',
-            tags: ['Book Distribution', 'Community Events'],
-        },
-        {
-            id: 5,
-            imageUrl: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=800&auto=format&fit=crop',
-            caption: 'Students enjoying their new library',
-            location: 'Nairobi',
-            tags: ['School Visits', 'Reading Sessions'],
-        },
-        {
-            id: 6,
-            imageUrl: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=800&auto=format&fit=crop',
-            caption: 'Parent-child reading time',
-            location: 'Eldoret',
-            tags: ['Community Events', 'Reading Sessions'],
-        },
-    ];
+    // Extract unique tags from images
+    const availableTags = ['All', ...new Set(images.flatMap(item => item.tags))];
 
     const filteredItems = selectedTag && selectedTag !== 'All'
-        ? galleryItems.filter(item => item.tags.includes(selectedTag))
-        : galleryItems;
+        ? images.filter(item => item.tags.includes(selectedTag))
+        : images;
 
     return (
         <main className="min-h-screen w-full bg-texture-paper overflow-x-hidden selection:bg-brand-orange/30">
@@ -82,7 +56,7 @@ export function Gallery() {
             <section className="py-8 px-4">
                 <div className="max-w-6xl mx-auto">
                     <div className="flex flex-wrap justify-center gap-4">
-                        {tags.map((tag) => (
+                        {availableTags.map((tag) => (
                             <button
                                 key={tag}
                                 onClick={() => setSelectedTag(tag === 'All' ? null : tag)}
@@ -101,26 +75,39 @@ export function Gallery() {
             {/* Gallery Grid */}
             <section className="py-16 px-4">
                 <div className="max-w-7xl mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-                        {filteredItems.map((item, index) => (
-                            <div
-                                key={item.id}
-                                className="transform hover:scale-105 transition-transform duration-300"
-                            >
-                                <Polaroid
-                                    src={item.imageUrl}
-                                    alt={item.caption}
-                                    caption={item.caption}
-                                    rotation={index % 3 === 0 ? 2 : index % 3 === 1 ? -2 : 1}
-                                />
-                                <div className="mt-4 text-center">
-                                    <p className="font-hand text-lg text-brand-brown/70">
-                                        📍 {item.location}
-                                    </p>
+                    {isLoading ? (
+                        <div className="text-center py-20">
+                            <div className="w-12 h-12 border-4 border-brand-orange border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                            <p className="font-hand text-2xl text-brand-brown">Developing the film...</p>
+                        </div>
+                    ) : filteredItems.length === 0 ? (
+                        <div className="text-center py-20 bg-white/50 border-4 border-dashed border-brand-brown/10 rounded-3xl">
+                            <p className="font-hand text-2xl text-brand-brown">No photos in this collection yet!</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                            {filteredItems.map((item, index) => (
+                                <div
+                                    key={item.id}
+                                    className="transform hover:scale-105 transition-transform duration-300"
+                                >
+                                    <Polaroid
+                                        src={item.imageUrl}
+                                        alt={item.caption || 'Gallery image'}
+                                        caption={item.caption || ''}
+                                        rotation={index % 3 === 0 ? 2 : index % 3 === 1 ? -2 : 1}
+                                    />
+                                    {item.location && (
+                                        <div className="mt-4 text-center">
+                                            <p className="font-hand text-lg text-brand-brown/70">
+                                                📍 {item.location}
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </section>
 
