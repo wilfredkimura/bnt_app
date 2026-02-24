@@ -1,10 +1,20 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import {
+    SignedIn,
+    SignedOut,
+    SignInButton,
+    UserButton,
+    useUser
+} from '@clerk/clerk-react';
 
 export function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const { isAuthenticated, isAdmin, user, logout } = useAuth();
+    const { user, isSignedIn } = useUser();
+
+    // Check for admin role in metadata (if using Clerk roles) or fallback to name/email check
+    const isAdmin = user?.publicMetadata?.role === 'Admin' ||
+        user?.emailAddresses.some(e => e.emailAddress.includes('admin@booksandtrunks.org'));
 
     const navLinks = [
         { name: 'Home', path: '/' },
@@ -18,12 +28,7 @@ export function Navbar() {
         ...navLinks,
     ];
 
-    const currentLinks = isAuthenticated ? authenticatedLinks : navLinks;
-
-    const handleLogout = () => {
-        logout();
-        setIsMenuOpen(false);
-    };
+    const currentLinks = isSignedIn ? authenticatedLinks : navLinks;
 
     return (
         <nav className="fixed top-0 left-0 right-0 bg-brand-cream shadow-md z-50 border-b-2 border-brand-brown/20">
@@ -51,56 +56,50 @@ export function Navbar() {
                         ))}
 
                         {/* Conditional Auth Buttons */}
-                        {isAuthenticated ? (
-                            <>
+                        <SignedIn>
+                            <Link
+                                to="/requests"
+                                className="font-marker text-lg text-brand-brown hover:text-brand-burgundy transition-colors"
+                            >
+                                📩 Requests
+                            </Link>
+                            <Link
+                                to="/profile"
+                                className="font-marker text-lg bg-brand-orange text-brand-cream px-4 py-2 rounded-lg hover:bg-brand-brown transition-all"
+                            >
+                                👤 My Profile
+                            </Link>
+                            {isAdmin && (
                                 <Link
-                                    to="/requests"
-                                    className="font-marker text-lg text-brand-brown hover:text-brand-burgundy transition-colors"
+                                    to="/admin"
+                                    className="font-marker text-lg bg-brand-burgundy text-brand-cream px-4 py-2 rounded-lg hover:bg-brand-brown transition-all"
                                 >
-                                    📩 Requests
+                                    📊 Admin
                                 </Link>
-                                <Link
-                                    to="/profile"
-                                    className="font-marker text-lg bg-brand-orange text-brand-cream px-4 py-2 rounded-lg hover:bg-brand-brown transition-all"
-                                >
-                                    👤 My Profile
-                                </Link>
-                                {isAdmin && (
-                                    <Link
-                                        to="/admin"
-                                        className="font-marker text-lg bg-brand-burgundy text-brand-cream px-4 py-2 rounded-lg hover:bg-brand-brown transition-all"
-                                    >
-                                        📊 Admin
-                                    </Link>
-                                )}
-                                <div className="flex items-center gap-3">
-                                    <span className="font-hand text-lg text-brand-brown">
-                                        👋 {user?.name}
-                                    </span>
-                                    <button
-                                        onClick={handleLogout}
-                                        className="font-hand text-lg bg-brand-brown text-brand-cream px-4 py-2 rounded-lg hover:bg-brand-burgundy transition-all"
-                                    >
-                                        Logout
+                            )}
+                            <div className="flex items-center gap-3 ml-2">
+                                <UserButton afterSignOutUrl="/" />
+                                <span className="font-hand text-lg text-brand-brown">
+                                    👋 {user?.firstName || user?.username}
+                                </span>
+                            </div>
+                        </SignedIn>
+
+                        <SignedOut>
+                            <div className="flex items-center gap-4">
+                                <SignInButton mode="modal">
+                                    <button className="font-hand text-lg text-brand-brown hover:text-brand-burgundy transition-colors">
+                                        Login
                                     </button>
-                                </div>
-                            </>
-                        ) : (
-                            <>
-                                <Link
-                                    to="/login"
-                                    className="font-hand text-lg text-brand-brown hover:text-brand-burgundy transition-colors"
-                                >
-                                    Login
-                                </Link>
+                                </SignInButton>
                                 <Link
                                     to="/signup"
                                     className="font-hand text-lg bg-brand-burgundy text-brand-cream px-4 py-2 rounded-lg hover:bg-brand-brown transition-all"
                                 >
                                     Sign Up
                                 </Link>
-                            </>
-                        )}
+                            </div>
+                        </SignedOut>
                     </div>
 
                     {/* Mobile Menu Button */}
@@ -143,38 +142,36 @@ export function Navbar() {
                         ))}
 
                         {/* Mobile Auth Buttons */}
-                        {isAuthenticated ? (
-                            <>
-                                <div className="pt-3 border-t-2 border-brand-brown/10">
-                                    <p className="font-hand text-lg text-brand-brown mb-3">
-                                        👋 {user?.name}
+                        <SignedIn>
+                            <div className="pt-3 border-t-2 border-brand-brown/10">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <UserButton afterSignOutUrl="/" />
+                                    <p className="font-hand text-lg text-brand-brown">
+                                        👋 {user?.firstName}
                                     </p>
-                                    {isAdmin && (
-                                        <Link
-                                            to="/admin"
-                                            onClick={() => setIsMenuOpen(false)}
-                                            className="block font-hand text-lg bg-brand-burgundy text-brand-cream px-4 py-2 rounded-lg hover:bg-brand-brown transition-all text-center mb-2"
-                                        >
-                                            📊 Admin Dashboard
-                                        </Link>
-                                    )}
-                                    <button
-                                        onClick={handleLogout}
-                                        className="w-full font-hand text-lg bg-brand-brown text-brand-cream px-4 py-2 rounded-lg hover:bg-brand-burgundy transition-all"
-                                    >
-                                        Logout
-                                    </button>
                                 </div>
-                            </>
-                        ) : (
+                                {isAdmin && (
+                                    <Link
+                                        to="/admin"
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="block font-hand text-lg bg-brand-burgundy text-brand-cream px-4 py-2 rounded-lg hover:bg-brand-brown transition-all text-center mb-2"
+                                    >
+                                        📊 Admin Dashboard
+                                    </Link>
+                                )}
+                            </div>
+                        </SignedIn>
+
+                        <SignedOut>
                             <div className="pt-3 border-t-2 border-brand-brown/10 space-y-2">
-                                <Link
-                                    to="/login"
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="block font-hand text-lg text-center text-brand-brown hover:text-brand-burgundy transition-colors py-2"
-                                >
-                                    Login
-                                </Link>
+                                <SignInButton mode="modal">
+                                    <button
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="w-full font-hand text-lg text-center text-brand-brown hover:text-brand-burgundy transition-colors py-2"
+                                    >
+                                        Login
+                                    </button>
+                                </SignInButton>
                                 <Link
                                     to="/signup"
                                     onClick={() => setIsMenuOpen(false)}
@@ -183,7 +180,7 @@ export function Navbar() {
                                     Sign Up
                                 </Link>
                             </div>
-                        )}
+                        </SignedOut>
                     </div>
                 </div>
             )}

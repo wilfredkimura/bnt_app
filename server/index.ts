@@ -7,6 +7,9 @@ import statsRouter from './routes/stats.js';
 import authRouter from './routes/auth.js';
 import requestsRouter from './routes/requests.js';
 import communityRouter from './routes/community.js';
+import webhooksRouter from './routes/webhooks.js';
+
+import { clerkMiddleware, recordActivityMiddleware } from './middleware/clerk.js';
 
 dotenv.config();
 
@@ -16,6 +19,8 @@ const PORT = process.env.PORT || 3001;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(clerkMiddleware as any);
+app.use(recordActivityMiddleware as any);
 
 // Routes
 app.use('/api/auth', authRouter);
@@ -24,6 +29,7 @@ app.use('/api/gallery', galleryRouter);
 app.use('/api/stats', statsRouter);
 app.use('/api/requests', requestsRouter);
 app.use('/api/community', communityRouter);
+app.use('/api/webhooks', webhooksRouter);
 
 // Health check
 app.get('/api/health', (_req, res) => {

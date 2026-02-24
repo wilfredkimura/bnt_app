@@ -1,4 +1,4 @@
-mport { Router } from 'express';
+import { Router } from 'express';
 import { prisma } from '../../src/lib/prisma.js';
 
 const router = Router();
@@ -36,15 +36,21 @@ router.get('/', async (_req, res) => {
 });
 
 // PATCH /api/community/me - Update own profile (bio, photoUrl, etc)
-router.patch('/me', async (req, res) => {
+router.patch('/me', async (req: any, res) => {
     try {
-        const email = req.headers['x-user-email'] as string;
-        if (!email) return res.status(401).json({ error: 'Unauthorized' });
+        const clerkId = req.auth?.userId;
+        if (!clerkId) return res.status(401).json({ error: 'Unauthorized' });
+
+        const user = await prisma.user.findUnique({
+            where: { clerkId },
+        });
+
+        if (!user) return res.status(404).json({ error: 'User not found' });
 
         const { bio, photoUrl, name, phone, location } = req.body;
 
         await prisma.communityMember.updateMany({
-            where: { email: { equals: email, mode: 'insensitive' } },
+            where: { email: { equals: user.email, mode: 'insensitive' } },
             data: {
                 bio,
                 photoUrl,
@@ -55,7 +61,7 @@ router.patch('/me', async (req, res) => {
         });
 
         const updated = await prisma.communityMember.findFirst({
-            where: { email: { equals: email, mode: 'insensitive' } }
+            where: { email: { equals: user.email, mode: 'insensitive' } }
         });
 
         res.json(updated);

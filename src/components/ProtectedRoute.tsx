@@ -1,22 +1,30 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useUser, RedirectToSignIn } from '@clerk/clerk-react';
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
+    adminOnly?: boolean;
 }
 
-export function ProtectedRoute({ children }: ProtectedRouteProps) {
-    const { isAuthenticated, isAdmin } = useAuth();
+export function ProtectedRoute({ children, adminOnly = false }: ProtectedRouteProps) {
+    const { isLoaded, isSignedIn, user } = useUser();
 
-    if (!isAuthenticated) {
-        // Redirect to login page if not authenticated
-        return <Navigate to="/login" replace />;
+    if (!isLoaded) {
+        return <div className="h-screen w-screen flex items-center justify-center font-hand text-2xl text-brand-brown">Loading...</div>;
     }
 
-    if (!isAdmin) {
-        // Redirect to home if authenticated but not admin
-        return <Navigate to="/" replace />;
+    if (!isSignedIn) {
+        return <RedirectToSignIn />;
+    }
+
+    if (adminOnly) {
+        const isAdmin = user?.publicMetadata?.role === 'Admin' ||
+            user?.emailAddresses.some(e => e.emailAddress.includes('admin@booksandtrunks.org'));
+
+        if (!isAdmin) {
+            return <Navigate to="/" replace />;
+        }
     }
 
     return <>{children}</>;

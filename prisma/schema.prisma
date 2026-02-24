@@ -69,11 +69,13 @@ enum RequestType {
 
 model User {
   id                 Int                @id @default(autoincrement())
+  clerkId            String?            @unique
   name               String
   email              String             @unique
-  password           String
+  password           String             @default("") // Keep for legacy/fallback, but hashed
   role               Role               @default(Volunteer)
   subscriptionStatus SubscriptionStatus @default(Inactive)
+  lastLogin          DateTime?
   createdAt          DateTime           @default(now())
 
   // Relations
@@ -234,7 +236,7 @@ model CommunityMember {
   role       String // e.g., "Volunteer", "Team Member", "Board Member"
   bio        String?  @db.Text
   photoUrl   String?
-  email      String?
+  email      String?  @unique
   phone      String?
   location   String?
   tags       String[] // Custom tags for members
