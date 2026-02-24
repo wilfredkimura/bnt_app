@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import bcrypt from 'bcryptjs';
 import { prisma } from '../../src/lib/prisma.js';
 
 const router = Router();
@@ -18,6 +19,10 @@ router.post('/register', async (req, res) => {
             return res.status(403).json({ error: 'Cannot register as Admin' });
         }
 
+        if (password.length < 6) {
+            return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+        }
+
         // Check if user already exists
         const existingUser = await prisma.user.findUnique({
             where: { email },
@@ -27,13 +32,16 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ error: 'User with this email already exists' });
         }
 
-        // Create user (in production, hash the password with bcrypt)
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Create user
         const user = await prisma.$transaction(async (tx) => {
             const newUser = await tx.user.create({
                 data: {
                     name,
                     email,
-                    password, // TODO: Hash with bcrypt in production
+                    password: hashedPassword,
                     role: role || 'Volunteer', // Default to Volunteer
                 },
             });
@@ -81,8 +89,9 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
-        // Validate password (in production, use bcrypt.compare)
-        if (password !== user.password) {
+        // Validate password
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
