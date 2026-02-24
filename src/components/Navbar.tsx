@@ -14,29 +14,42 @@ export function Navbar() {
     const { user, isSignedIn } = useUser();
     const { getToken } = useAuth();
     const syncChecked = useRef(false);
+    const [dbRole, setDbRole] = useState<string | null>(null);
 
-    // Auto-sync trigger: When user logs in, ping the API to ensure they exist in Neon
+    // Auto-sync trigger & Role fetch: When user logs in, ensure they exist in Neon and get their role
     useEffect(() => {
         if (isSignedIn && !syncChecked.current) {
             const syncUser = async () => {
                 try {
                     const token = await getToken();
-                    // Ping the health endpoint with the token to trigger recordActivityMiddleware
-                    await fetch('/api/health', {
+                    // Ping the profile endpoint to both trigger sync AND get the latest role
+                    const res = await fetch('/api/community/me', {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
-                    console.log('[Navbar] User sync triggered');
-                    syncChecked.current = true;
+
+                    if (res.ok) {
+                        const profile = await res.json();
+                        setDbRole(profile.role);
+                        console.log('[Navbar] User profile loaded:', profile.role);
+                        syncChecked.current = true;
+                    } else if (res.status === 404) {
+                        // If not found yet, maybe the background sync is still running?
+                        // Hit health to force a sync if needed
+                        await fetch('/api/health', {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                    }
                 } catch (err) {
-                    console.error('[Navbar] Sync fail:', err);
+                    console.error('[Navbar] Profile fetch fail:', err);
                 }
             };
             syncUser();
         }
     }, [isSignedIn, getToken]);
 
-    // Check for admin role in metadata (if using Clerk roles) or fallback to name/email check
-    const isAdmin = user?.publicMetadata?.role === 'Admin' ||
+    // Check for admin role - DB role takes priority, fallback to metadata/email for initial dev
+    const isAdmin = dbRole === 'Admin' ||
+        user?.publicMetadata?.role === 'Admin' ||
         user?.emailAddresses.some(e => e.emailAddress.includes('admin@booksandtrunks.org'));
 
     const navLinks = [
