@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getAllGalleryItems, createGalleryItem, deleteGalleryItem } from '../../lib/api';
 import type { GalleryItem } from '@prisma/client';
+import { uploadToCloudinary } from '../../lib/cloudinary';
 
 export function AdminGallery() {
     const [images, setImages] = useState<GalleryItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
+    const [fileToUpload, setFileToUpload] = useState<File | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [uploadForm, setUploadForm] = useState({
         imageUrl: '',
@@ -29,13 +32,33 @@ export function AdminGallery() {
         }
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files?.[0]) {
+            setFileToUpload(e.target.files[0]);
+            // Optional: reset URL if file is picked? Or keep both.
+        }
+    };
+
     const handleUpload = async (e: React.FormEvent) => {
         e.preventDefault();
         setUploading(true);
 
         try {
+            let finalImageUrl = uploadForm.imageUrl;
+
+            // If a file is selected, upload it first
+            if (fileToUpload) {
+                finalImageUrl = await uploadToCloudinary(fileToUpload);
+            }
+
+            if (!finalImageUrl) {
+                alert('Please provide an image URL or choose a file to upload.');
+                setUploading(false);
+                return;
+            }
+
             const newImage = await createGalleryItem({
-                imageUrl: uploadForm.imageUrl,
+                imageUrl: finalImageUrl,
                 caption: uploadForm.caption || undefined,
                 location: uploadForm.location || undefined,
                 tags: uploadForm.tags ? uploadForm.tags.split(',').map(t => t.trim()) : [],
@@ -43,9 +66,11 @@ export function AdminGallery() {
 
             setImages([newImage, ...images]);
             setUploadForm({ imageUrl: '', caption: '', location: '', tags: '' });
+            setFileToUpload(null);
+            if (fileInputRef.current) fileInputRef.current.value = '';
         } catch (error) {
             console.error('Failed to upload image:', error);
-            alert('Failed to upload image');
+            alert('Failed to upload image. Please check your Cloudinary configuration.');
         } finally {
             setUploading(false);
         }
@@ -88,18 +113,32 @@ export function AdminGallery() {
                     Upload New Image
                 </h2>
                 <form onSubmit={handleUpload} className="space-y-4">
-                    <div>
-                        <label className="font-hand text-lg text-brand-brown block mb-2">
-                            Image URL *
-                        </label>
-                        <input
-                            type="url"
-                            value={uploadForm.imageUrl}
-                            onChange={(e) => setUploadForm({ ...uploadForm, imageUrl: e.target.value })}
-                            className="w-full px-4 py-3 rounded-lg border-2 border-brand-brown/30 focus:border-brand-burgundy focus:outline-none font-hand text-lg"
-                            placeholder="https://example.com/image.jpg"
-                            required
-                        />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="font-hand text-lg text-brand-brown block mb-2">
+                                Image URL
+                            </label>
+                            <input
+                                type="url"
+                                value={uploadForm.imageUrl}
+                                onChange={(e) => setUploadForm({ ...uploadForm, imageUrl: e.target.value })}
+                                className="w-full px-4 py-3 rounded-lg border-2 border-brand-brown/30 focus:border-brand-burgundy focus:outline-none font-hand text-lg bg-white/50"
+                                placeholder="https://example.com/image.jpg"
+                                disabled={!!fileToUpload}
+                            />
+                        </div>
+                        <div>
+                            <label className="font-hand text-lg text-brand-brown block mb-2">
+                                Or Upload File
+                            </label>
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleFileChange}
+                                accept="image/*"
+                                className="w-full px-4 py-2 rounded-lg border-2 border-brand-brown/30 focus:border-brand-burgundy focus:outline-none font-hand text-lg bg-white/50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-marker file:bg-brand-orange/20 file:text-brand-brown hover:file:bg-brand-orange/30"
+                            />
+                        </div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>

@@ -41,6 +41,22 @@ app.get('/api/health', (_req, res) => {
     res.json({ status: 'ok', message: 'API server is running' });
 });
 
+// Cloudinary Public Config
+app.get('/api/config/cloudinary', (_req, res) => {
+    const cloudinaryUrl = process.env.CLOUDINARY_URL;
+    if (!cloudinaryUrl) {
+        return res.json({ cloudName: process.env.VITE_CLOUDINARY_CLOUD_NAME || null });
+    }
+
+    try {
+        // cloudinary://key:secret@cloud_name
+        const cloudName = cloudinaryUrl.split('@')[1];
+        res.json({ cloudName });
+    } catch (err) {
+        res.json({ cloudName: process.env.VITE_CLOUDINARY_CLOUD_NAME || null });
+    }
+});
+
 // Start server
 // Export app for Vercel
 export default app;

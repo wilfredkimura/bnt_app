@@ -17,6 +17,7 @@ export function Navbar() {
     const navLinks = [
         { name: 'Home', path: '/' },
         { name: 'Stories', path: '/stories' },
+        { name: 'Gallery', path: '/gallery' },
         { name: 'Impact', path: '/impact' },
         { name: 'Members', path: '/members' },
         { name: 'Get Involved', path: '/get-involved' },

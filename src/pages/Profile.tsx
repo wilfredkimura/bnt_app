@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useUser, useAuth } from '@clerk/clerk-react';
 import { Doodle } from '../components/ui/Doodle';
+import { uploadToCloudinary } from '../lib/cloudinary';
 
 interface CommunityMember {
     id: string;
@@ -19,7 +20,9 @@ export function Profile() {
     const [profile, setProfile] = useState<CommunityMember | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Form states
     const [bio, setBio] = useState('');
@@ -53,6 +56,25 @@ export function Profile() {
             console.error('Error fetching profile:', err);
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsUploadingPhoto(true);
+        setMessage(null);
+
+        try {
+            const uploadedUrl = await uploadToCloudinary(file);
+            setPhotoUrl(uploadedUrl);
+            setMessage({ type: 'success', text: 'Photo uploaded! Don\'t forget to save your changes.' });
+        } catch (err) {
+            console.error('Photo upload failed:', err);
+            setMessage({ type: 'error', text: 'Failed to upload photo. Please check your connection.' });
+        } finally {
+            setIsUploadingPhoto(false);
         }
     };
 
@@ -101,7 +123,7 @@ export function Profile() {
                 <form onSubmit={handleSave} className="relative z-10 space-y-8">
                     <div className="flex flex-col md:flex-row gap-8 items-start">
                         <div className="w-full md:w-1/3 flex flex-col items-center gap-4">
-                            <div className="w-48 h-48 rounded-full border-4 border-brand-orange overflow-hidden bg-brand-cream shadow-lg transform hover:scale-105 transition-transform">
+                            <div className="w-48 h-48 rounded-full border-4 border-brand-orange overflow-hidden bg-brand-cream shadow-lg transform hover:scale-105 transition-transform relative group">
                                 {photoUrl ? (
                                     <img src={photoUrl} alt={name} className="w-full h-full object-cover" />
                                 ) : (
@@ -109,16 +131,31 @@ export function Profile() {
                                         {name?.charAt(0) || '👤'}
                                     </div>
                                 )}
+                                {isUploadingPhoto && (
+                                    <div className="absolute inset-0 bg-brand-burgundy/40 flex items-center justify-center backdrop-blur-sm">
+                                        <div className="w-8 h-8 border-4 border-brand-cream border-t-transparent rounded-full animate-spin"></div>
+                                    </div>
+                                )}
                             </div>
                             <div className="w-full">
-                                <label className="block font-marker text-lg text-brand-brown mb-2 text-center md:text-left">Photo URL</label>
                                 <input
-                                    type="text"
-                                    value={photoUrl}
-                                    onChange={(e) => setPhotoUrl(e.target.value)}
-                                    placeholder="https://example.com/photo.jpg"
-                                    className="w-full px-4 py-2 rounded-xl border-2 border-brand-brown/20 focus:border-brand-burgundy outline-none font-hand text-lg bg-white/50"
+                                    type="file"
+                                    ref={fileInputRef}
+                                    onChange={handlePhotoUpload}
+                                    accept="image/*"
+                                    className="hidden"
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    disabled={isUploadingPhoto}
+                                    className="w-full py-2 px-4 bg-brand-cream border-2 border-brand-brown/20 rounded-xl font-hand text-lg hover:bg-brand-orange/10 transition-colors flex items-center justify-center gap-2"
+                                >
+                                    {isUploadingPhoto ? 'Uploading...' : '📸 Change Photo'}
+                                </button>
+                                <p className="mt-2 text-xs text-brand-brown/50 font-hand text-center">
+                                    JPG, PNG or GIF. Max 5MB.
+                                </p>
                             </div>
                         </div>
 
