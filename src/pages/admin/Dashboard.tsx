@@ -49,10 +49,10 @@ export function AdminDashboard() {
     return (
         <div>
             <div className="mb-8">
-                <h1 className="font-marker text-5xl text-brand-brown mb-2">
+                <h1 className="font-marker text-3xl md:text-5xl text-brand-brown mb-2">
                     Admin Dashboard
                 </h1>
-                <p className="font-hand text-xl text-brand-brown/70">
+                <p className="font-hand text-lg md:text-xl text-brand-brown/70">
                     Welcome back! Here's what's happening with Books & Trunks.
                 </p>
             </div>

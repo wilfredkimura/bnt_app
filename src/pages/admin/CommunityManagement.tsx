@@ -108,7 +108,7 @@ export function CommunityManagement() {
         <div className="space-y-8">
             <div className="flex justify-between items-center mb-6">
                 <div className="relative inline-block">
-                    <h1 className="font-marker text-4xl text-brand-brown transform -rotate-1">Community Management</h1>
+                    <h1 className="font-marker text-3xl md:text-4xl text-brand-brown transform -rotate-1">Community Management</h1>
                     <div className="absolute -bottom-1 left-0 w-full">
                         <Doodle type="underline" className="w-full text-brand-orange h-3" />
                     </div>
@@ -172,8 +172,8 @@ export function CommunityManagement() {
                                 <button
                                     onClick={() => handleUpdateMember(member.id, { isActive: !member.isActive })}
                                     className={`px-4 py-2 rounded-lg font-marker text-sm border-2 transition-all ${member.isActive
-                                            ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-600 hover:text-white'
-                                            : 'bg-green-50 text-green-600 border-green-200 hover:bg-green-600 hover:text-white'
+                                        ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-600 hover:text-white'
+                                        : 'bg-green-50 text-green-600 border-green-200 hover:bg-green-600 hover:text-white'
                                         }`}
                                 >
                                     {member.isActive ? 'Deactivate' : 'Activate'}

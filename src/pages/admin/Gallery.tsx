@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { getAllGalleryItems, createGalleryItem, deleteGalleryItem } from '../../lib/api';
+import { getAllGalleryItems, createGalleryItem, deleteGalleryItem, updateGalleryItem } from '../../lib/api';
 import type { GalleryItem } from '@prisma/client';
 import { uploadToCloudinary } from '../../lib/cloudinary';
 
@@ -9,6 +9,8 @@ export function AdminGallery() {
     const [uploading, setUploading] = useState(false);
     const [fileToUpload, setFileToUpload] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
 
     const [uploadForm, setUploadForm] = useState({
         imageUrl: '',
@@ -35,7 +37,6 @@ export function AdminGallery() {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files?.[0]) {
             setFileToUpload(e.target.files[0]);
-            // Optional: reset URL if file is picked? Or keep both.
         }
     };
 
@@ -46,7 +47,6 @@ export function AdminGallery() {
         try {
             let finalImageUrl = uploadForm.imageUrl;
 
-            // If a file is selected, upload it first
             if (fileToUpload) {
                 finalImageUrl = await uploadToCloudinary(fileToUpload);
             }
@@ -71,6 +71,30 @@ export function AdminGallery() {
         } catch (error) {
             console.error('Failed to upload image:', error);
             alert('Failed to upload image. Please check your Cloudinary configuration.');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleUpdate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editingItem) return;
+
+        setUploading(true);
+        try {
+            const updated = await updateGalleryItem(editingItem.id, {
+                caption: editingItem.caption,
+                location: editingItem.location,
+                tags: typeof editingItem.tags === 'string'
+                    ? (editingItem.tags as string).split(',').map(t => t.trim())
+                    : editingItem.tags,
+            });
+
+            setImages(images.map(img => img.id === updated.id ? updated : img));
+            setEditingItem(null);
+        } catch (error) {
+            console.error('Failed to update image:', error);
+            alert('Failed to update image');
         } finally {
             setUploading(false);
         }
@@ -106,6 +130,69 @@ export function AdminGallery() {
                     Upload and manage gallery images
                 </p>
             </div>
+
+            {/* Edit Modal / Form Backdrop */}
+            {editingItem && (
+                <div className="fixed inset-0 bg-brand-brown/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-brand-cream w-full max-w-lg rounded-3xl border-4 border-brand-brown shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+                        <div className="bg-brand-burgundy p-4 flex justify-between items-center text-brand-cream font-marker text-2xl">
+                            <span>✏️ Edit Image Info</span>
+                            <button onClick={() => setEditingItem(null)} className="hover:scale-110 transition-transform">✕</button>
+                        </div>
+                        <form onSubmit={handleUpdate} className="p-6 space-y-4">
+                            <div className="aspect-video rounded-xl overflow-hidden border-2 border-brand-brown/20 mb-4">
+                                <img src={editingItem.imageUrl} alt="Edit preview" className="w-full h-full object-cover" />
+                            </div>
+                            <div>
+                                <label className="font-hand text-lg text-brand-brown block mb-1">Caption *</label>
+                                <input
+                                    type="text"
+                                    value={editingItem.caption || ''}
+                                    onChange={(e) => setEditingItem({ ...editingItem, caption: e.target.value })}
+                                    className="w-full px-4 py-2 rounded-lg border-2 border-brand-brown/20 font-hand text-lg focus:border-brand-burgundy outline-none"
+                                    required
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="font-hand text-lg text-brand-brown block mb-1">Location</label>
+                                    <input
+                                        type="text"
+                                        value={editingItem.location || ''}
+                                        onChange={(e) => setEditingItem({ ...editingItem, location: e.target.value })}
+                                        className="w-full px-4 py-2 rounded-lg border-2 border-brand-brown/20 font-hand text-lg focus:border-brand-burgundy outline-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="font-hand text-lg text-brand-brown block mb-1">Tags (comma-separated)</label>
+                                    <input
+                                        type="text"
+                                        value={Array.isArray(editingItem.tags) ? editingItem.tags.join(', ') : editingItem.tags}
+                                        onChange={(e) => setEditingItem({ ...editingItem, tags: e.target.value as any })}
+                                        className="w-full px-4 py-2 rounded-lg border-2 border-brand-brown/20 font-hand text-lg focus:border-brand-burgundy outline-none"
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex gap-3 pt-4">
+                                <button
+                                    type="submit"
+                                    disabled={uploading}
+                                    className="flex-1 bg-brand-burgundy text-brand-cream py-3 rounded-xl font-marker text-xl shadow-lg hover:bg-brand-brown transition-all disabled:opacity-50"
+                                >
+                                    {uploading ? 'Saving...' : '💾 Save Changes'}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setEditingItem(null)}
+                                    className="px-6 py-3 border-2 border-brand-brown/20 text-brand-brown rounded-xl font-hand text-xl hover:bg-brand-brown/5 transition-all"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
 
             {/* Upload Form */}
             <div className="bg-brand-cream p-6 rounded-lg shadow-lg border-2 border-brand-brown/20 mb-8">
@@ -227,12 +314,20 @@ export function AdminGallery() {
                                         </span>
                                     ))}
                                 </div>
-                                <button
-                                    onClick={() => handleDelete(image.id)}
-                                    className="w-full font-hand text-sm bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 transition-all"
-                                >
-                                    🗑️ Delete
-                                </button>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <button
+                                        onClick={() => setEditingItem(image)}
+                                        className="font-hand text-sm bg-brand-brown text-brand-cream px-3 py-2 rounded hover:bg-brand-burgundy transition-all"
+                                    >
+                                        ✏️ Edit
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(image.id)}
+                                        className="font-hand text-sm bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 transition-all"
+                                    >
+                                        🗑️ Delete
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))}

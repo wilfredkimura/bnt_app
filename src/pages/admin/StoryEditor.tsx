@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getStoryById, createStory, updateStory } from '../../lib/api';
+import { uploadToCloudinary } from '../../lib/cloudinary';
 
 
 export function StoryEditor() {
     const { id } = useParams();
     const navigate = useNavigate();
     const isEdit = !!id;
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [loading, setLoading] = useState(isEdit);
     const [saving, setSaving] = useState(false);
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
     const [formData, setFormData] = useState({
         title: '',
         slug: '',
@@ -77,6 +80,22 @@ export function StoryEditor() {
         }
     };
 
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsUploadingImage(true);
+        try {
+            const url = await uploadToCloudinary(file);
+            setFormData(prev => ({ ...prev, imageUrl: url }));
+        } catch (error) {
+            console.error('Failed to upload image:', error);
+            alert('Failed to upload image. Please try again.');
+        } finally {
+            setIsUploadingImage(false);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
@@ -105,18 +124,19 @@ export function StoryEditor() {
     }
 
     return (
-        <div>
+        <div className="pb-20">
             <div className="mb-8">
-                <h1 className="font-marker text-5xl text-brand-brown mb-2">
+                <h1 className="font-marker text-3xl md:text-5xl text-brand-brown mb-2">
                     {isEdit ? 'Edit Story' : 'Create New Story'}
                 </h1>
-                <p className="font-hand text-xl text-brand-brown/70">
+                <p className="font-hand text-lg md:text-xl text-brand-brown/70">
                     Write and publish your blog post
                 </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="bg-brand-cream p-6 rounded-lg shadow-lg border-2 border-brand-brown/20">
+                <div className="bg-brand-cream p-4 md:p-6 rounded-lg shadow-lg border-2 border-brand-brown/20">
+                    {/* ... existing fields ... */}
                     {/* Title */}
                     <div className="mb-6">
                         <label className="font-hand text-xl text-brand-brown block mb-2">
@@ -217,20 +237,58 @@ export function StoryEditor() {
                     {/* Featured Image */}
                     <div className="mb-6">
                         <label className="font-hand text-xl text-brand-brown block mb-2">
-                            Featured Image URL
+                            Featured Image
                         </label>
-                        <input
-                            type="url"
-                            name="imageUrl"
-                            value={formData.imageUrl}
-                            onChange={handleChange}
-                            className="w-full px-4 py-3 rounded-lg border-2 border-brand-brown/30 focus:border-brand-burgundy focus:outline-none font-hand text-lg"
-                            placeholder="https://example.com/image.jpg"
-                        />
+                        <div className="flex flex-col md:flex-row gap-4 items-start">
+                            <div className="flex-1 w-full">
+                                <input
+                                    type="url"
+                                    name="imageUrl"
+                                    value={formData.imageUrl}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 rounded-lg border-2 border-brand-brown/30 focus:border-brand-burgundy focus:outline-none font-hand text-lg"
+                                    placeholder="https://example.com/image.jpg"
+                                />
+                                <p className="font-hand text-sm text-brand-brown/60 mt-1">
+                                    Direct URL or use the upload button
+                                </p>
+                            </div>
+                            <div className="flex flex-col items-center gap-2 w-full md:w-auto">
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    onChange={handleImageUpload}
+                                    accept="image/*"
+                                    className="hidden"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    disabled={isUploadingImage}
+                                    className="w-full md:w-auto font-hand text-lg bg-brand-orange/20 text-brand-brown px-4 py-3 rounded-lg border-2 border-brand-brown/20 hover:bg-brand-orange/40 transition-all whitespace-nowrap"
+                                >
+                                    {isUploadingImage ? '⌛ Uploading...' : '📸 Upload Image'}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Image Preview */}
+                        {formData.imageUrl && (
+                            <div className="mt-4 relative group w-full max-w-md">
+                                <img
+                                    src={formData.imageUrl}
+                                    alt="Preview"
+                                    className="w-full aspect-video object-cover rounded-xl border-4 border-white shadow-lg"
+                                />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
+                                    <p className="text-white font-hand text-xl">Preview</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Toggles */}
-                    <div className="flex gap-6">
+                    <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                         <label className="flex items-center gap-2 font-hand text-lg text-brand-brown cursor-pointer">
                             <input
                                 type="checkbox"
@@ -255,11 +313,11 @@ export function StoryEditor() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-4">
+                <div className="flex flex-col md:flex-row gap-4">
                     <button
                         type="submit"
                         disabled={saving}
-                        className="font-hand text-xl bg-brand-burgundy text-brand-cream px-8 py-4 rounded-lg shadow-lg hover:shadow-xl hover:bg-brand-brown transition-all disabled:opacity-50"
+                        className="flex-1 font-hand text-xl bg-brand-burgundy text-brand-cream px-8 py-4 rounded-lg shadow-lg hover:shadow-xl hover:bg-brand-brown transition-all disabled:opacity-50"
                     >
                         {saving ? 'Saving...' : isEdit ? '💾 Update Story' : '✍️ Create Story'}
                     </button>
@@ -267,7 +325,7 @@ export function StoryEditor() {
                         type="button"
                         onClick={() => navigate('/admin/stories')}
                         disabled={saving}
-                        className="font-hand text-xl bg-gray-500 text-white px-8 py-4 rounded-lg shadow-lg hover:shadow-xl hover:bg-gray-600 transition-all disabled:opacity-50"
+                        className="flex-1 md:flex-none font-hand text-xl bg-gray-500 text-white px-8 py-4 rounded-lg shadow-lg hover:shadow-xl hover:bg-gray-600 transition-all disabled:opacity-50"
                     >
                         Cancel
                     </button>

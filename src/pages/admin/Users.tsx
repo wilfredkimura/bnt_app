@@ -86,12 +86,12 @@ export function AdminUsers() {
     }
 
     return (
-        <div>
+        <div className="pb-20">
             <div className="mb-8">
-                <h1 className="font-marker text-5xl text-brand-brown mb-2">
+                <h1 className="font-marker text-3xl md:text-5xl text-brand-brown mb-2">
                     User Management
                 </h1>
-                <p className="font-hand text-xl text-brand-brown/70">
+                <p className="font-hand text-lg md:text-xl text-brand-brown/70">
                     View and manage all members of the Books & Trunks community.
                 </p>
             </div>
@@ -122,8 +122,54 @@ export function AdminUsers() {
                 ))}
             </div>
 
-            {/* Users Table */}
-            <div className="bg-brand-cream rounded-lg shadow-lg border-2 border-brand-brown/20 overflow-hidden">
+            {/* Mobile Cards View */}
+            <div className="grid grid-cols-1 gap-4 md:hidden">
+                {users.map((user) => (
+                    <div key={user.id} className="bg-brand-cream p-4 rounded-xl border-2 border-brand-brown/20 shadow-md">
+                        <div className="flex justify-between items-start mb-3">
+                            <div>
+                                <h3 className="font-hand text-lg text-brand-brown font-bold leading-tight">
+                                    {user.name}
+                                    {user.clerkId && <span className="ml-2 text-[10px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full uppercase">Clerk</span>}
+                                </h3>
+                                <p className="font-hand text-sm text-brand-brown/60">{user.email}</p>
+                            </div>
+                            <span className={`px-2 py-0.5 rounded-full font-hand text-xs ${user.subscriptionStatus === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                                {user.subscriptionStatus}
+                            </span>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-3 border-t border-brand-brown/10">
+                            <div>
+                                <p className="font-hand text-xs text-brand-brown/50 uppercase tracking-widest mb-1">Role</p>
+                                <select
+                                    value={user.role}
+                                    disabled={updatingId === user.id}
+                                    onChange={(e) => handleRoleUpdate(user.id, e.target.value)}
+                                    className={`px-3 py-1 rounded-full text-xs font-bold border-2 outline-none appearance-none cursor-pointer ${user.role === 'Admin' ? 'bg-brand-burgundy text-brand-cream border-brand-burgundy' :
+                                        user.role === 'Volunteer' ? 'bg-brand-orange text-brand-brown border-brand-orange' :
+                                            'bg-pink-100 text-pink-700 border-pink-200'
+                                        }`}
+                                >
+                                    <option value="Volunteer">Volunteer</option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="Donor">Donor</option>
+                                    <option value="OrganisationLeader">Leader</option>
+                                </select>
+                            </div>
+                            <div className="text-right">
+                                <p className="font-hand text-xs text-brand-brown/50 uppercase tracking-widest mb-1">Joined</p>
+                                <p className="font-hand text-sm text-brand-brown/70">
+                                    {new Date(user.createdAt).toLocaleDateString()}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {/* Users Table (Desktop) */}
+            <div className="hidden md:block bg-brand-cream rounded-lg shadow-lg border-2 border-brand-brown/20 overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left font-hand">
                         <thead className="bg-brand-brown/10 border-b-2 border-brand-brown/20">

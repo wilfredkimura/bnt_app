@@ -78,7 +78,7 @@ export function AdminRequests() {
         <div className="space-y-8">
             <div className="flex justify-between items-center mb-6">
                 <div className="relative inline-block">
-                    <h1 className="font-marker text-3xl text-brand-brown transform -rotate-1">User Requests</h1>
+                    <h1 className="font-marker text-3xl md:text-5xl text-brand-brown transform -rotate-1">User Requests</h1>
                     <Doodle type="underline" className="absolute -bottom-1 left-0 w-full text-brand-orange h-3" />
                 </div>
             </div>
