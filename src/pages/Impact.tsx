@@ -1,6 +1,4 @@
 
-import { Navbar } from '../components/Navbar';
-import { Footer } from '../components/Footer';
 import { Doodle } from '../components/ui/Doodle';
 
 export function Impact() {
@@ -40,7 +38,6 @@ export function Impact() {
 
     return (
         <main className="min-h-screen w-full bg-texture-paper overflow-x-hidden selection:bg-brand-orange/30">
-            <Navbar />
 
             {/* Hero Section */}
             <section className="pt-32 pb-16 px-4">
@@ -162,7 +159,6 @@ export function Impact() {
                 </div>
             </section>
 
-            <Footer />
         </main>
     );
 }

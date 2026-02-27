@@ -24,7 +24,7 @@ export function Footer() {
                             <br />
                             +254 705 956 111
                             <br />
-                            admin@booksntrunks.org
+                            booksandtrunks@gmail.com
                         </p>
                     </div>
                     <div>

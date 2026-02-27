@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Navbar } from '../components/Navbar';
-import { Footer } from '../components/Footer';
 import { Doodle } from '../components/ui/Doodle';
 import { getStoryBySlug } from '../lib/api';
 import type { Story } from '@prisma/client';
@@ -51,7 +49,6 @@ export function StoryDetail() {
 
     return (
         <main className="min-h-screen w-full bg-texture-paper overflow-x-hidden selection:bg-brand-orange/30">
-            <Navbar />
 
             {/* Hero Section with Featured Image */}
             <section className="pt-32 pb-16 px-4">
@@ -134,7 +131,6 @@ export function StoryDetail() {
                 </div>
             </section>
 
-            <Footer />
         </main>
     );
 }

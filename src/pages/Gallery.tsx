@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Navbar } from '../components/Navbar';
-import { Footer } from '../components/Footer';
 import { Polaroid } from '../components/ui/Polaroid';
 import { Doodle } from '../components/ui/Doodle';
 import { ImageViewer } from '../components/ui/ImageViewer';
@@ -48,7 +46,6 @@ export function Gallery() {
 
     return (
         <main className="min-h-screen w-full bg-texture-paper overflow-x-hidden selection:bg-brand-orange/30">
-            <Navbar />
 
             {/* Hero Section */}
             <section className="pt-32 pb-16 px-4">
@@ -163,7 +160,6 @@ export function Gallery() {
                 </div>
             </section>
 
-            <Footer />
         </main>
     );
 }

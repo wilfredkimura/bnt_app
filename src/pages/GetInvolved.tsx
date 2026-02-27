@@ -1,6 +1,4 @@
 
-import { Navbar } from '../components/Navbar';
-import { Footer } from '../components/Footer';
 import { Doodle } from '../components/ui/Doodle';
 
 export function GetInvolved() {
@@ -21,7 +19,6 @@ export function GetInvolved() {
 
     return (
         <main className="min-h-screen w-full bg-texture-paper overflow-x-hidden selection:bg-brand-orange/30">
-            <Navbar />
 
             {/* Hero Section */}
             <section className="pt-32 pb-16 px-4">
@@ -166,7 +163,7 @@ export function GetInvolved() {
                             <Doodle type="heart" className="w-10 h-10 mx-auto mb-3 text-brand-burgundy" />
                             <h3 className="font-marker text-2xl text-brand-brown mb-2">Email</h3>
                             <p className="font-hand text-lg text-brand-brown">
-                                booksntrunks@gmail.com
+                                booksandtrunks@gmail.com
                             </p>
                         </div>
                         <div className="bg-brand-cream p-6 rounded-lg shadow-md border-2 border-brand-brown/20">
@@ -187,7 +184,6 @@ export function GetInvolved() {
                 </div>
             </section>
 
-            <Footer />
         </main>
     );
 }
