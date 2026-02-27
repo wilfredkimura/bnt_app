@@ -1,8 +1,33 @@
-
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { Doodle } from './ui/Doodle';
 import { Polaroid } from './ui/Polaroid';
+import { getAllGalleryItems } from '../lib/api';
+import type { GalleryItem } from '@prisma/client';
+
 export function HeroSection() {
+  const [featuredImages, setFeaturedImages] = useState<GalleryItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const data = await getAllGalleryItems();
+        // Filter featured items and take top 3
+        const featured = data
+          .filter((item: GalleryItem) => item.featured)
+          .slice(0, 3);
+        setFeaturedImages(featured);
+      } catch (err) {
+        console.error('Failed to fetch featured images for hero:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchFeatured();
+  }, []);
+
   return <section className="relative w-full min-h-[90vh] flex flex-col items-center justify-center overflow-hidden pt-20 pb-32 md:pb-48 px-4">
     {/* Background Doodles */}
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -52,27 +77,62 @@ export function HeroSection() {
         }} transition={{
           delay: 0.6
         }} className="pt-4 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-          <button className="group relative inline-block">
+          <Link to="/get-involved" className="group relative inline-block">
             <div className="absolute inset-0 bg-brand-brown rounded-lg transform rotate-2 group-hover:rotate-1 transition-transform"></div>
             <div className="relative bg-brand-orange text-white font-marker text-xl px-8 py-4 rounded-lg transform -rotate-1 group-hover:-rotate-2 transition-transform border-2 border-brand-brown hover:bg-brand-orange/90">
               Donate Now
             </div>
             <Doodle type="arrow" className="absolute -right-16 top-1/2 -translate-y-1/2 w-12 h-12 text-brand-brown transform rotate-12 hidden md:block" />
-          </button>
+          </Link>
 
-          <button className="group relative inline-block">
+          <Link to="/impact" className="group relative inline-block">
             <div className="absolute inset-0 bg-brand-burgundy/20 rounded-lg transform -rotate-1 group-hover:-rotate-2 transition-transform"></div>
             <div className="relative bg-white text-brand-burgundy font-marker text-xl px-8 py-4 rounded-lg transform rotate-1 group-hover:rotate-2 transition-transform border-2 border-brand-burgundy hover:bg-brand-cream">
               Our Impact
             </div>
-          </button>
+          </Link>
         </motion.div>
       </div>
 
       {/* Hero Image Cluster */}
-      <div className="relative h-[600px] md:h-[700px] w-full flex items-center justify-center">
+      <div className="relative h-[500px] md:h-[600px] w-full flex items-center justify-center">
         <div className="relative w-full h-full max-w-md mx-auto">
-          <Polaroid src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Children reading together" caption="Kangemi Read Aloud" rotation={-6} attachment="pin" className="absolute top-4 left-4 z-10 w-64" delay={0.2} />
+          {isLoading ? (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-12 h-12 border-4 border-brand-orange border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : featuredImages.length === 0 ? (
+            <Polaroid
+              src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+              alt="Children reading together"
+              caption="Books & Trunks in Action"
+              rotation={-6}
+              attachment="pin"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 z-10"
+            />
+          ) : (
+            <div className="relative w-full h-full">
+              {featuredImages.map((image, index) => {
+                const styles = [
+                  "absolute top-0 left-0 z-10 w-64 rotate-[-6deg]",
+                  "absolute bottom-4 right-0 z-20 w-64 rotate-[4deg]",
+                  "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 w-72 rotate-[2deg] shadow-2xl"
+                ];
+                return (
+                  <div key={image.id} className={styles[index] || styles[0]}>
+                    <Polaroid
+                      src={image.imageUrl}
+                      alt={image.caption || 'Featured image'}
+                      caption={image.caption || ''}
+                      rotation={index === 0 ? -6 : index === 1 ? 4 : 2}
+                      attachment={index % 2 === 0 ? 'pin' : 'tape'}
+                      delay={0.2 + index * 0.1}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

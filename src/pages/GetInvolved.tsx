@@ -12,22 +12,10 @@ export function GetInvolved() {
             cta: 'Apply to Volunteer',
         },
         {
-            title: 'Donate Books',
-            description: 'Have books to share? We accept new and gently used books suitable for children and young adults.',
-            icon: 'star',
-            cta: 'Donate Books',
-        },
-        {
-            title: 'Financial Support',
+            title: 'Donate',
             description: 'Your donations help us purchase books, maintain trunks, and expand our reach across Kenya.',
             icon: 'heart',
             cta: 'Make a Donation',
-        },
-        {
-            title: 'Partner with Us',
-            description: 'Schools, organizations, and businesses can partner with us to bring literacy to more communities.',
-            icon: 'star',
-            cta: 'Become a Partner',
         },
     ];
 
@@ -44,16 +32,44 @@ export function GetInvolved() {
                         </h1>
                         <div className="absolute -bottom-2 left-0 w-full h-6 bg-brand-orange/40 -rotate-1 z-0"></div>
                     </div>
-                    <p className="font-hand text-2xl md:text-3xl text-brand-brown max-w-3xl mx-auto">
+                    <p className="font-hand text-2xl md:text-3xl text-brand-brown max-w-3xl mx-auto mb-12">
                         Join us in our mission to bring books to every child in Kenya
                     </p>
-                    <Doodle type="star" className="w-16 h-16 mx-auto mt-6 text-brand-burgundy" />
+
+                    {/* Payment Details Card */}
+                    <div className="max-w-2xl mx-auto bg-brand-cream p-8 rounded-lg shadow-xl border-4 border-brand-brown transform -rotate-1 mb-12 relative">
+                        <Doodle type="squiggle" className="absolute -top-6 -right-6 w-20 h-20 text-brand-orange rotate-12" />
+                        <Doodle type="circle" className="absolute -bottom-4 -left-4 w-12 h-12 text-brand-green/40" />
+
+                        <div className="space-y-8">
+                            <div>
+                                <h3 className="font-marker text-3xl text-brand-burgundy mb-4 underline decoration-brand-orange">Mpesa Paybill</h3>
+                                <div className="font-hand text-2xl text-brand-brown space-y-2">
+                                    <p><span className="font-bold text-brand-burgundy">Business no.:</span> 247247</p>
+                                    <p><span className="font-bold text-brand-burgundy">Acc. no.:</span> 420269</p>
+                                    <p><span className="font-bold text-brand-burgundy">Acc. Name:</span> The Books & Trunks Society</p>
+                                </div>
+                            </div>
+
+                            <div className="pt-6 border-t-2 border-brand-brown/10">
+                                <p className="font-hand text-xl text-brand-brown/80 italic mb-6">
+                                    "For those who purpose to do cheques deposits or direct bank transfers to the B&T Equity Account"
+                                </p>
+                                <div className="font-hand text-2xl text-brand-brown space-y-2">
+                                    <p className="font-bold text-brand-burgundy">Equity Bank, Kenyatta Avenue Branch</p>
+                                    <p><span className="font-bold text-brand-burgundy">KES Account Number:</span> 1290286701889</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <Doodle type="star" className="w-16 h-16 mx-auto text-brand-burgundy" />
                 </div>
             </section>
 
             {/* Opportunities Grid */}
             <section className="py-16 px-4">
-                <div className="max-w-6xl mx-auto">
+                <div className="max-w-4xl mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {opportunities.map((opportunity, index) => (
                             <div
@@ -114,9 +130,7 @@ export function GetInvolved() {
                                 </label>
                                 <select className="w-full px-4 py-3 rounded-lg border-2 border-brand-brown/30 focus:border-brand-burgundy focus:outline-none font-hand text-lg">
                                     <option>Volunteer</option>
-                                    <option>Donate Books</option>
-                                    <option>Financial Support</option>
-                                    <option>Partnership</option>
+                                    <option>Donate</option>
                                     <option>Other</option>
                                 </select>
                             </div>
@@ -152,7 +166,7 @@ export function GetInvolved() {
                             <Doodle type="heart" className="w-10 h-10 mx-auto mb-3 text-brand-burgundy" />
                             <h3 className="font-marker text-2xl text-brand-brown mb-2">Email</h3>
                             <p className="font-hand text-lg text-brand-brown">
-                                admin@booksntrunks.org
+                                booksntrunks@gmail.com
                             </p>
                         </div>
                         <div className="bg-brand-cream p-6 rounded-lg shadow-md border-2 border-brand-brown/20">

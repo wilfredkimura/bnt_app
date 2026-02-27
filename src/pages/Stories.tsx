@@ -121,20 +121,7 @@ export function Stories() {
                 </div>
             </section>
 
-            {/* Call to Action */}
-            <section className="py-16 px-4 bg-brand-orange/10">
-                <div className="max-w-4xl mx-auto text-center">
-                    <h2 className="font-marker text-4xl md:text-5xl text-brand-brown mb-6">
-                        Share Your Story
-                    </h2>
-                    <p className="font-hand text-2xl text-brand-brown mb-8">
-                        Have you been touched by Books & Trunks? We'd love to hear from you!
-                    </p>
-                    <button className="font-hand text-2xl bg-brand-burgundy text-brand-cream px-8 py-4 rounded-lg shadow-lg hover:shadow-xl hover:bg-brand-brown transition-all transform hover:-rotate-1">
-                        Submit Your Story
-                    </button>
-                </div>
-            </section>
+
         </main>
     );
 }

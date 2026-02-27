@@ -3,6 +3,7 @@ import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { Polaroid } from '../components/ui/Polaroid';
 import { Doodle } from '../components/ui/Doodle';
+import { ImageViewer } from '../components/ui/ImageViewer';
 import { getAllGalleryItems } from '../lib/api';
 import type { GalleryItem } from '@prisma/client';
 
@@ -10,6 +11,7 @@ export function Gallery() {
     const [images, setImages] = useState<GalleryItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedTag, setSelectedTag] = useState<string | null>(null);
+    const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
     useEffect(() => {
         const fetchGallery = async () => {
@@ -31,6 +33,18 @@ export function Gallery() {
     const filteredItems = selectedTag && selectedTag !== 'All'
         ? images.filter(item => item.tags.includes(selectedTag))
         : images;
+
+    const handleNext = () => {
+        if (selectedIndex !== null) {
+            setSelectedIndex((selectedIndex + 1) % filteredItems.length);
+        }
+    };
+
+    const handlePrev = () => {
+        if (selectedIndex !== null) {
+            setSelectedIndex((selectedIndex - 1 + filteredItems.length) % filteredItems.length);
+        }
+    };
 
     return (
         <main className="min-h-screen w-full bg-texture-paper overflow-x-hidden selection:bg-brand-orange/30">
@@ -89,7 +103,8 @@ export function Gallery() {
                             {filteredItems.map((item, index) => (
                                 <div
                                     key={item.id}
-                                    className="transform hover:scale-105 transition-transform duration-300"
+                                    className="transform hover:scale-105 transition-transform duration-300 cursor-pointer"
+                                    onClick={() => setSelectedIndex(index)}
                                 >
                                     <Polaroid
                                         src={item.imageUrl}
@@ -110,6 +125,17 @@ export function Gallery() {
                     )}
                 </div>
             </section>
+
+            {/* Image Viewer Overlay */}
+            {selectedIndex !== null && (
+                <ImageViewer
+                    items={filteredItems}
+                    currentIndex={selectedIndex}
+                    onClose={() => setSelectedIndex(null)}
+                    onNext={handleNext}
+                    onPrev={handlePrev}
+                />
+            )}
 
             {/* Call to Action */}
             <section className="py-16 px-4 bg-brand-orange/10">

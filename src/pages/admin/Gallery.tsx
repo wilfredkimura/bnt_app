@@ -17,6 +17,7 @@ export function AdminGallery() {
         caption: '',
         location: '',
         tags: '',
+        featured: false,
     });
 
     useEffect(() => {
@@ -62,10 +63,11 @@ export function AdminGallery() {
                 caption: uploadForm.caption || undefined,
                 location: uploadForm.location || undefined,
                 tags: uploadForm.tags ? uploadForm.tags.split(',').map(t => t.trim()) : [],
+                featured: uploadForm.featured,
             });
 
             setImages([newImage, ...images]);
-            setUploadForm({ imageUrl: '', caption: '', location: '', tags: '' });
+            setUploadForm({ imageUrl: '', caption: '', location: '', tags: '', featured: false });
             setFileToUpload(null);
             if (fileInputRef.current) fileInputRef.current.value = '';
         } catch (error) {
@@ -88,6 +90,7 @@ export function AdminGallery() {
                 tags: typeof editingItem.tags === 'string'
                     ? (editingItem.tags as string).split(',').map(t => t.trim())
                     : editingItem.tags,
+                featured: editingItem.featured,
             });
 
             setImages(images.map(img => img.id === updated.id ? updated : img));
@@ -172,6 +175,18 @@ export function AdminGallery() {
                                         className="w-full px-4 py-2 rounded-lg border-2 border-brand-brown/20 font-hand text-lg focus:border-brand-burgundy outline-none"
                                     />
                                 </div>
+                            </div>
+                            <div className="flex items-center gap-2 py-2">
+                                <input
+                                    type="checkbox"
+                                    id="edit-featured"
+                                    checked={editingItem.featured}
+                                    onChange={(e) => setEditingItem({ ...editingItem, featured: e.target.checked })}
+                                    className="w-5 h-5 rounded border-2 border-brand-brown accent-brand-burgundy cursor-pointer"
+                                />
+                                <label htmlFor="edit-featured" className="font-hand text-lg text-brand-brown cursor-pointer font-bold">
+                                    🌟 Mark as Featured (Hero Section)
+                                </label>
                             </div>
                             <div className="flex gap-3 pt-4">
                                 <button
@@ -266,6 +281,18 @@ export function AdminGallery() {
                             placeholder="Book Distribution, Reading Sessions"
                         />
                     </div>
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            id="upload-featured"
+                            checked={uploadForm.featured}
+                            onChange={(e) => setUploadForm({ ...uploadForm, featured: e.target.checked })}
+                            className="w-6 h-6 rounded border-2 border-brand-brown accent-brand-burgundy cursor-pointer"
+                        />
+                        <label htmlFor="upload-featured" className="font-hand text-xl text-brand-brown cursor-pointer font-bold">
+                            🌟 Mark as Featured (Display in Hero Section)
+                        </label>
+                    </div>
                     <button
                         type="submit"
                         disabled={uploading}
@@ -288,13 +315,18 @@ export function AdminGallery() {
                     {images.map((image) => (
                         <div
                             key={image.id}
-                            className="bg-brand-cream rounded-lg shadow-lg border-2 border-brand-brown/20 overflow-hidden"
+                            className="bg-brand-cream rounded-lg shadow-lg border-2 border-brand-brown/20 overflow-hidden relative"
                         >
                             <img
                                 src={image.imageUrl}
                                 alt={image.caption || 'Gallery image'}
                                 className="w-full h-48 object-cover"
                             />
+                            {image.featured && (
+                                <div className="absolute top-2 right-2 bg-brand-orange text-white px-2 py-1 rounded-full font-marker text-xs shadow-md border border-brand-brown animate-bounce">
+                                    🌟 Featured
+                                </div>
+                            )}
                             <div className="p-4">
                                 <h3 className="font-hand text-lg text-brand-brown font-bold mb-2">
                                     {image.caption}

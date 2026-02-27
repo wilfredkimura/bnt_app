@@ -1,38 +1,28 @@
-
+import { useState, useEffect } from 'react';
 import { Polaroid } from './ui/Polaroid';
 import { Doodle } from './ui/Doodle';
-const photos = [{
-  src: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  caption: 'Read Aloud Sessions',
-  rotation: -2,
-  attachment: 'tape' as const
-}, {
-  src: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  caption: 'Library Transformation',
-  rotation: 3,
-  attachment: 'pin' as const
-}, {
-  src: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  caption: 'Book Club Days Out',
-  rotation: -4,
-  attachment: 'tape' as const
-}, {
-  src: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  caption: 'Paint Their Dreams',
-  rotation: 2,
-  attachment: 'pin' as const
-}, {
-  src: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  caption: 'Toto Kreatives Festival',
-  rotation: -3,
-  attachment: 'tape' as const
-}, {
-  src: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  caption: 'PCEA Upendo Church',
-  rotation: 4,
-  attachment: 'pin' as const
-}];
+import { getAllGalleryItems } from '../lib/api';
+import type { GalleryItem } from '@prisma/client';
+
 export function GallerySection() {
+  const [images, setImages] = useState<GalleryItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchGallery = async () => {
+      try {
+        const data = await getAllGalleryItems();
+        // Take only the latest 6 items for the homepage
+        setImages(data.slice(0, 6));
+      } catch (err) {
+        console.error('Failed to fetch gallery for homepage:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchGallery();
+  }, []);
+
   return <section className="py-24 px-4 bg-texture-cork relative overflow-hidden">
     {/* Section Title */}
     <div className="text-center mb-16 relative z-10">
@@ -49,10 +39,31 @@ export function GallerySection() {
     </div>
 
     {/* Gallery Grid */}
-    <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-4 relative z-10">
-      {photos.map((photo, index) => <div key={index} className="flex justify-center p-4">
-        <Polaroid {...photo} alt={photo.caption} delay={index * 0.1} />
-      </div>)}
+    <div className="max-w-7xl mx-auto relative z-10">
+      {isLoading ? (
+        <div className="text-center py-20">
+          <div className="w-12 h-12 border-4 border-brand-orange border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="font-hand text-2xl text-brand-brown">Developing the film...</p>
+        </div>
+      ) : images.length === 0 ? (
+        <div className="text-center py-20 bg-white/20 backdrop-blur-sm border-4 border-dashed border-brand-brown/20 rounded-3xl">
+          <p className="font-hand text-2xl text-brand-brown">No photos in our story yet. Check back soon!</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-4">
+          {images.map((item, index) => (
+            <div key={item.id} className="flex justify-center p-4">
+              <Polaroid
+                src={item.imageUrl}
+                alt={item.caption || 'Gallery image'}
+                caption={item.caption || ''}
+                rotation={index % 3 === 0 ? 2 : index % 3 === 1 ? -2 : 1}
+                delay={index * 0.1}
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
 
     {/* Decorative elements */}
