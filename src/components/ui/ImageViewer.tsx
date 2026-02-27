@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Doodle } from './Doodle';
 import type { GalleryItem } from '@prisma/client';
@@ -124,7 +124,7 @@ export function ImageViewer({ items, currentIndex, onClose, onNext, onPrev }: Im
                                 drag="x"
                                 dragConstraints={{ left: 0, right: 0 }}
                                 dragElastic={1}
-                                onDragEnd={(e, { offset, velocity }) => {
+                                onDragEnd={(_e, { offset, velocity }) => {
                                     const swipe = swipePower(offset.x, velocity.x);
 
                                     if (swipe < -swipeConfidenceThreshold) {
