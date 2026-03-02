@@ -2,6 +2,7 @@ import { HeroSection } from '../components/HeroSection';
 import { GallerySection } from '../components/GallerySection';
 import { ImpactSection } from '../components/ImpactSection';
 import { CommunitySection } from '../components/CommunitySection';
+import { EventsSection } from '../components/EventsSection';
 
 export function Home() {
     return (
@@ -15,7 +16,7 @@ export function Home() {
             </div>
 
             <ImpactSection />
-
+            <EventsSection />
             <CommunitySection />
         </main>
     );

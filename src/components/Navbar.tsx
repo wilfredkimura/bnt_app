@@ -19,6 +19,7 @@ export function Navbar() {
         { name: 'Stories', path: '/stories' },
         { name: 'Gallery', path: '/gallery' },
         { name: 'Impact', path: '/impact' },
+        { name: 'Events', path: '/events' },
         { name: 'Members', path: '/members' },
         { name: 'Get Involved', path: '/get-involved' },
     ];

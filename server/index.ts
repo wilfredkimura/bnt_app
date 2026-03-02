@@ -9,6 +9,7 @@ import statsRouter from './routes/stats.js';
 import authRouter from './routes/auth.js';
 import requestsRouter from './routes/requests.js';
 import communityRouter from './routes/community.js';
+import eventsRouter from './routes/events.js';
 
 import { clerkMiddleware, recordActivityMiddleware } from './middleware/clerk.js';
 
@@ -35,6 +36,7 @@ app.use('/api/gallery', galleryRouter);
 app.use('/api/stats', statsRouter);
 app.use('/api/requests', requestsRouter);
 app.use('/api/community', communityRouter);
+app.use('/api/events', eventsRouter);
 
 // Health check
 app.get('/api/health', (_req, res) => {

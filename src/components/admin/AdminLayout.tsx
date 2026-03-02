@@ -12,6 +12,7 @@ export function AdminLayout() {
         { name: 'Dashboard', path: '/admin', icon: '📊' },
         { name: 'Stories', path: '/admin/stories', icon: '📝' },
         { name: 'Gallery', path: '/admin/gallery', icon: '🖼️' },
+        { name: 'Events', path: '/admin/events', icon: '📅' },
         { name: 'Users', path: '/admin/users', icon: '👥' },
         { name: 'Requests', path: '/admin/requests', icon: '📩' },
         { name: 'Community', path: '/admin/community', icon: '🤝' },

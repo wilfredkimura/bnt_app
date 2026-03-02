@@ -123,3 +123,55 @@ export async function getAllUsers() {
     if (!res.ok) throw new Error('Failed to fetch users');
     return res.json();
 }
+
+// ==================
+// EVENTS
+// ==================
+
+export async function getPublishedEvents() {
+    const res = await fetch(`${API_URL}/events?published=true`);
+    if (!res.ok) throw new Error('Failed to fetch published events');
+    return res.json();
+}
+
+export async function getAllEvents(token?: string | null) {
+    const res = await fetch(`${API_URL}/events`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    });
+    if (!res.ok) throw new Error('Failed to fetch all events');
+    return res.json();
+}
+
+export async function createEvent(data: any, token?: string | null) {
+    const res = await fetch(`${API_URL}/events`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error('Failed to create event');
+    return res.json();
+}
+
+export async function updateEvent(id: string, data: any, token?: string | null) {
+    const res = await fetch(`${API_URL}/events/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error('Failed to update event');
+    return res.json();
+}
+
+export async function deleteEvent(id: string, token?: string | null) {
+    const res = await fetch(`${API_URL}/events/${id}`, {
+        method: 'DELETE',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+    });
+    if (!res.ok) throw new Error('Failed to delete event');
+}

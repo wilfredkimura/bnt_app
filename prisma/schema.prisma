@@ -179,6 +179,8 @@ model Event {
   attendees        Int           @default(0)
   booksDistributed Int           @default(0)
   published        Boolean       @default(false)
+  googleEventId    String?       @unique
+  microsoftEventId String?       @unique
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
   galleryItems     GalleryItem[]

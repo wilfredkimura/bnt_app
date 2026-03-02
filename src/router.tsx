@@ -5,6 +5,7 @@ import { StoryDetail } from './pages/StoryDetail';
 import { Impact } from './pages/Impact';
 import { Gallery } from './pages/Gallery';
 import { GetInvolved } from './pages/GetInvolved';
+import { Events } from './pages/Events';
 import { Login, Signup } from './pages/Login';
 import { SubmitRequest } from './pages/SubmitRequest';
 
@@ -17,6 +18,8 @@ import { AdminGallery } from './pages/admin/Gallery';
 import { AdminUsers } from './pages/admin/Users';
 import { AdminRequests } from './pages/admin/Requests';
 import { CommunityManagement } from './pages/admin/CommunityManagement';
+import { AdminEvents } from './pages/admin/Events';
+import { AdminEventEditor } from './pages/admin/EventEditor';
 import { Profile } from './pages/Profile';
 import { Members } from './pages/Members';
 import { ProtectedRoute } from './components/ProtectedRoute';
@@ -69,6 +72,10 @@ export const router = createBrowserRouter([
                 element: <Members />
             },
             {
+                path: 'events',
+                element: <Events />
+            },
+            {
                 path: 'profile',
                 element: <ProtectedRoute><Profile /></ProtectedRoute>
             },
@@ -114,6 +121,18 @@ export const router = createBrowserRouter([
             {
                 path: 'community',
                 element: <CommunityManagement />,
+            },
+            {
+                path: 'events',
+                element: <AdminEvents />,
+            },
+            {
+                path: 'events/new',
+                element: <AdminEventEditor />,
+            },
+            {
+                path: 'events/edit/:id',
+                element: <AdminEventEditor />,
             },
         ],
     },
