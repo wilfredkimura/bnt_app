@@ -71,7 +71,8 @@ const __dirname = path.dirname(__filename);
 if (process.env.NODE_ENV === 'production') {
     const distPath = path.join(__dirname, '../dist');
     app.use(express.static(distPath));
-    app.get('(.*)', (req, res) => {
+    // NOTE: Express 5 requires named parameters for wildcards (e.g., :path*)
+    app.get('/:path*', (req, res) => {
         if (!req.url.startsWith('/api/')) {
             res.sendFile(path.join(distPath, 'index.html'));
         }
