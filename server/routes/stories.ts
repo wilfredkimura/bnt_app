@@ -12,9 +12,12 @@ router.get('/', async (req, res) => {
             orderBy: { createdAt: 'desc' },
         });
         res.json(stories);
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error fetching stories:', error);
-        res.status(500).json({ error: 'Failed to fetch stories' });
+        res.status(500).json({
+            error: 'Failed to fetch stories',
+            details: error.message
+        });
     }
 });
 

@@ -11,9 +11,12 @@ router.get('/', async (_req, res) => {
             include: { event: true },
         });
         res.json(items);
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error fetching gallery items:', error);
-        res.status(500).json({ error: 'Failed to fetch gallery items' });
+        res.status(500).json({
+            error: 'Failed to fetch gallery items',
+            details: error.message
+        });
     }
 });
 
@@ -24,9 +27,12 @@ router.post('/', async (req, res) => {
             data: req.body,
         });
         res.status(201).json(item);
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error creating gallery item:', error);
-        res.status(500).json({ error: 'Failed to create gallery item' });
+        res.status(500).json({
+            error: 'Failed to create gallery item',
+            details: error.message
+        });
     }
 });
 

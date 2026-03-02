@@ -18,9 +18,12 @@ router.get('/', async (_req, res) => {
             galleryCount,
             activeUsers: 0, // TODO: Implement when user auth is added
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error fetching stats:', error);
-        res.status(500).json({ error: 'Failed to fetch stats' });
+        res.status(500).json({
+            error: 'Failed to fetch stats',
+            details: error.message
+        });
     }
 });
 

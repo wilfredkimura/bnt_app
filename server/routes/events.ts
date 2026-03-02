@@ -13,9 +13,12 @@ router.get('/', async (req, res) => {
             orderBy: { eventDate: 'asc' },
         });
         res.json(events);
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error fetching events:', error);
-        res.status(500).json({ error: 'Failed to fetch events' });
+        res.status(500).json({
+            error: 'Failed to fetch events',
+            details: error.message
+        });
     }
 });
 
