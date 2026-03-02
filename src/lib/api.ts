@@ -151,7 +151,10 @@ export async function createEvent(data: any, token?: string | null) {
         },
         body: JSON.stringify(data),
     });
-    if (!res.ok) throw new Error('Failed to create event');
+    if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.details || errorData.error || 'Failed to create event');
+    }
     return res.json();
 }
 
@@ -164,7 +167,10 @@ export async function updateEvent(id: string, data: any, token?: string | null) 
         },
         body: JSON.stringify(data),
     });
-    if (!res.ok) throw new Error('Failed to update event');
+    if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.details || errorData.error || 'Failed to update event');
+    }
     return res.json();
 }
 

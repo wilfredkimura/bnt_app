@@ -55,22 +55,30 @@ router.get('/feed', async (_req, res) => {
 // POST /api/events - Create new event (Admin only)
 router.post('/', async (req: any, res) => {
     try {
-        // Simple auth check for now, can be improved with role check
         if (!req.auth?.userId) {
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
+        const { title, description, location, eventDate, endDate, eventType, published } = req.body;
+
         const event = await prisma.event.create({
             data: {
-                ...req.body,
-                eventDate: new Date(req.body.eventDate),
-                endDate: req.body.endDate ? new Date(req.body.endDate) : null,
+                title,
+                description,
+                location,
+                eventDate: new Date(eventDate),
+                endDate: endDate ? new Date(endDate) : null,
+                eventType: eventType || 'Meeting',
+                published: published || false,
             },
         });
         res.status(201).json(event);
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error creating event:', error);
-        res.status(500).json({ error: 'Failed to create event' });
+        res.status(500).json({
+            error: 'Failed to create event',
+            details: error.message
+        });
     }
 });
 
@@ -82,18 +90,27 @@ router.put('/:id', async (req: any, res) => {
         }
 
         const { id } = req.params;
+        const { title, description, location, eventDate, endDate, eventType, published } = req.body;
+
         const event = await prisma.event.update({
             where: { id },
             data: {
-                ...req.body,
-                eventDate: req.body.eventDate ? new Date(req.body.eventDate) : undefined,
-                endDate: req.body.endDate ? new Date(req.body.endDate) : (req.body.endDate === null ? null : undefined),
+                title,
+                description,
+                location,
+                eventDate: eventDate ? new Date(eventDate) : undefined,
+                endDate: endDate === null ? null : (endDate ? new Date(endDate) : undefined),
+                eventType,
+                published,
             },
         });
         res.json(event);
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error updating event:', error);
-        res.status(500).json({ error: 'Failed to update event' });
+        res.status(500).json({
+            error: 'Failed to update event',
+            details: error.message
+        });
     }
 });
 
