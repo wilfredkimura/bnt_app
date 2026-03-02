@@ -59,26 +59,6 @@ app.get('/api/config/cloudinary', (_req, res) => {
     }
 });
 
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// ... around line 62 ...
-
-// Serve static files in production
-if (process.env.NODE_ENV === 'production') {
-    const distPath = path.join(__dirname, '../dist');
-    app.use(express.static(distPath));
-    // NOTE: Express 5 requires named parameters for wildcards (e.g., :path*)
-    app.get('/:path*', (req, res) => {
-        if (!req.url.startsWith('/api/')) {
-            res.sendFile(path.join(distPath, 'index.html'));
-        }
-    });
-}
-
 // Export app for Vercel
 export default app;
 
