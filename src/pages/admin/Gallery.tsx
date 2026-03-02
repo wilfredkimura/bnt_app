@@ -139,7 +139,7 @@ export function AdminGallery() {
                 <div className="fixed inset-0 bg-brand-brown/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                     <div className="bg-brand-cream w-full max-w-lg rounded-3xl border-4 border-brand-brown shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
                         <div className="bg-brand-burgundy p-4 flex justify-between items-center text-brand-cream font-marker text-2xl">
-                            <span>✏️ Edit Image Info</span>
+                            <span>Edit Image Info</span>
                             <button onClick={() => setEditingItem(null)} className="hover:scale-110 transition-transform">✕</button>
                         </div>
                         <form onSubmit={handleUpdate} className="p-6 space-y-4">
@@ -194,7 +194,7 @@ export function AdminGallery() {
                                     disabled={uploading}
                                     className="flex-1 bg-brand-burgundy text-brand-cream py-3 rounded-xl font-marker text-xl shadow-lg hover:bg-brand-brown transition-all disabled:opacity-50"
                                 >
-                                    {uploading ? 'Saving...' : '💾 Save Changes'}
+                                    {uploading ? 'Saving...' : 'Save Changes'}
                                 </button>
                                 <button
                                     type="button"
@@ -298,7 +298,7 @@ export function AdminGallery() {
                         disabled={uploading}
                         className="font-hand text-xl bg-brand-burgundy text-brand-cream px-6 py-3 rounded-lg shadow-lg hover:shadow-xl hover:bg-brand-brown transition-all disabled:opacity-50"
                     >
-                        {uploading ? 'Uploading...' : '📸 Upload Image'}
+                        {uploading ? 'Uploading...' : 'Upload Image'}
                     </button>
                 </form>
             </div>
@@ -324,7 +324,7 @@ export function AdminGallery() {
                             />
                             {image.featured && (
                                 <div className="absolute top-2 right-2 bg-brand-orange text-white px-2 py-1 rounded-full font-marker text-xs shadow-md border border-brand-brown animate-bounce">
-                                    🌟 Featured
+                                    Featured
                                 </div>
                             )}
                             <div className="p-4">
@@ -351,13 +351,13 @@ export function AdminGallery() {
                                         onClick={() => setEditingItem(image)}
                                         className="font-hand text-sm bg-brand-brown text-brand-cream px-3 py-2 rounded hover:bg-brand-burgundy transition-all"
                                     >
-                                        ✏️ Edit
+                                        Edit
                                     </button>
                                     <button
                                         onClick={() => handleDelete(image.id)}
                                         className="font-hand text-sm bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 transition-all"
                                     >
-                                        🗑️ Delete
+                                        Delete
                                     </button>
                                 </div>
                             </div>

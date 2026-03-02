@@ -69,11 +69,11 @@ export const router = createBrowserRouter([
             },
             {
                 path: 'members',
-                element: <Members />
+                element: <ProtectedRoute><Members /></ProtectedRoute>
             },
             {
                 path: 'events',
-                element: <Events />
+                element: <ProtectedRoute><Events /></ProtectedRoute>
             },
             {
                 path: 'profile',

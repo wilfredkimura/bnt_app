@@ -30,11 +30,12 @@ router.get('/me', async (req: any, res) => {
     }
 });
 
-// GET /api/community - Get all community members
-router.get('/', async (_req, res) => {
+// GET /api/community - Get community members
+router.get('/', async (req, res) => {
     try {
+        const showAll = req.query.all === 'true';
         const members = await prisma.communityMember.findMany({
-            where: { isActive: true },
+            where: showAll ? {} : { isActive: true },
             orderBy: { joinedDate: 'desc' },
         });
         res.json(members);
@@ -109,18 +110,7 @@ router.patch('/:id', async (req, res) => {
     }
 });
 
-// DELETE /api/community/:id - Delete a member
-router.delete('/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        await prisma.communityMember.delete({
-            where: { id },
-        });
-        res.status(204).send();
-    } catch (error) {
-        console.error('Error deleting community member:', error);
-        res.status(500).json({ error: 'Failed to delete community member' });
-    }
-});
+// Soft deletion is handled via PATCH /api/community/:id with { isActive: false }
+// This route is removed to prevent permanent data loss as requested.
 
 export default router;

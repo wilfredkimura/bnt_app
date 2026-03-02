@@ -71,10 +71,10 @@ export function AdminUsers() {
     };
 
     const statCards = [
-        { label: 'Total Members', value: stats.total, icon: '👥', color: 'bg-brand-brown' },
-        { label: 'Admins', value: stats.admins, icon: '🛡️', color: 'bg-brand-burgundy' },
-        { label: 'Volunteers', value: stats.volunteers, icon: '🤝', color: 'bg-brand-orange' },
-        { label: 'Donors', value: stats.donors, icon: '💝', color: 'bg-pink-600' },
+        { label: 'Total Members', value: stats.total, color: 'bg-brand-brown' },
+        { label: 'Admins', value: stats.admins, color: 'bg-brand-burgundy' },
+        { label: 'Volunteers', value: stats.volunteers, color: 'bg-brand-orange' },
+        { label: 'Donors', value: stats.donors, color: 'bg-pink-600' },
     ];
 
     if (loading) {
@@ -110,7 +110,6 @@ export function AdminUsers() {
                         className="bg-brand-cream p-6 rounded-lg shadow-lg border-2 border-brand-brown/20"
                     >
                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-3xl">{stat.icon}</span>
                             <div className="font-marker text-3xl text-brand-brown">
                                 {stat.value}
                             </div>

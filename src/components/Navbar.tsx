@@ -61,20 +61,20 @@ export function Navbar() {
                                 to="/requests"
                                 className="font-marker text-lg text-brand-brown hover:text-brand-burgundy transition-colors"
                             >
-                                📩 Requests
+                                Requests
                             </Link>
                             <Link
                                 to="/profile"
                                 className="font-marker text-lg bg-brand-orange text-brand-cream px-4 py-2 rounded-lg hover:bg-brand-brown transition-all"
                             >
-                                👤 My Profile
+                                My Profile
                             </Link>
                             {isAdmin && (
                                 <Link
                                     to="/admin"
                                     className="font-marker text-lg bg-brand-burgundy text-brand-cream px-4 py-2 rounded-lg hover:bg-brand-brown transition-all"
                                 >
-                                    📊 Admin
+                                    Admin
                                 </Link>
                             )}
                             <div className="flex items-center gap-3 ml-2">
@@ -142,7 +142,7 @@ export function Navbar() {
                                         onClick={() => setIsMenuOpen(false)}
                                         className="block font-hand text-lg bg-brand-burgundy text-brand-cream px-4 py-2 rounded-lg hover:bg-brand-brown transition-all text-center mb-2"
                                     >
-                                        📊 Admin Dashboard
+                                        Admin Dashboard
                                     </Link>
                                 )}
                             </div>

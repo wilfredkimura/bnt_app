@@ -57,7 +57,7 @@ export function AdminStories() {
                     to="/admin/stories/new"
                     className="font-hand text-xl bg-brand-burgundy text-brand-cream px-6 py-3 rounded-lg shadow-lg hover:shadow-xl hover:bg-brand-brown transition-all text-center"
                 >
-                    ✍️ Create New Story
+                    Create New Story
                 </Link>
             </div>
 
@@ -70,7 +70,7 @@ export function AdminStories() {
                         to="/admin/stories/new"
                         className="inline-block font-hand text-xl bg-brand-burgundy text-brand-cream px-6 py-3 rounded-lg shadow-lg hover:shadow-xl hover:bg-brand-brown transition-all"
                     >
-                        ✍️ Create New Story
+                        Create New Story
                     </Link>
                 </div>
             ) : (
@@ -93,13 +93,13 @@ export function AdminStories() {
                                         to={`/admin/stories/edit/${story.id}`}
                                         className="flex-1 font-hand text-center bg-brand-brown text-brand-cream py-2 rounded-lg hover:bg-brand-burgundy"
                                     >
-                                        ✏️ Edit
+                                        Edit
                                     </Link>
                                     <button
                                         onClick={() => handleDelete(story.id)}
                                         className="font-hand px-4 bg-red-100 text-red-600 rounded-lg hover:bg-red-200"
                                     >
-                                        🗑️
+                                        Delete
                                     </button>
                                 </div>
                             </div>
@@ -141,7 +141,7 @@ export function AdminStories() {
                                                     : 'bg-gray-100 text-gray-800'
                                                     }`}
                                             >
-                                                {story.published ? '✅ Published' : '📝 Draft'}
+                                                {story.published ? 'Published' : 'Draft'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 font-hand text-lg text-brand-brown/70">
@@ -153,13 +153,13 @@ export function AdminStories() {
                                                     to={`/admin/stories/edit/${story.id}`}
                                                     className="font-hand text-sm bg-brand-brown text-brand-cream px-3 py-2 rounded hover:bg-brand-burgundy transition-all"
                                                 >
-                                                    ✏️ Edit
+                                                    Edit
                                                 </Link>
                                                 <button
                                                     onClick={() => handleDelete(story.id)}
                                                     className="font-hand text-sm bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 transition-all"
                                                 >
-                                                    🗑️ Delete
+                                                    Delete
                                                 </button>
                                             </div>
                                         </td>

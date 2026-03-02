@@ -9,13 +9,13 @@ export function AdminLayout() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const navItems = [
-        { name: 'Dashboard', path: '/admin', icon: '📊' },
-        { name: 'Stories', path: '/admin/stories', icon: '📝' },
-        { name: 'Gallery', path: '/admin/gallery', icon: '🖼️' },
-        { name: 'Events', path: '/admin/events', icon: '📅' },
-        { name: 'Users', path: '/admin/users', icon: '👥' },
-        { name: 'Requests', path: '/admin/requests', icon: '📩' },
-        { name: 'Community', path: '/admin/community', icon: '🤝' },
+        { name: 'Dashboard', path: '/admin', icon: null },
+        { name: 'Stories', path: '/admin/stories', icon: null },
+        { name: 'Gallery', path: '/admin/gallery', icon: null },
+        { name: 'Events', path: '/admin/events', icon: null },
+        { name: 'Users', path: '/admin/users', icon: null },
+        { name: 'Requests', path: '/admin/requests', icon: null },
+        { name: 'Community', path: '/admin/community', icon: null },
     ];
 
     const isActive = (path: string) => {
@@ -63,7 +63,6 @@ export function AdminLayout() {
                     to="/"
                     className="flex items-center gap-2 px-4 py-3 rounded-lg font-hand text-lg hover:bg-brand-cream/10 transition-all text-brand-orange font-bold underline underline-offset-4"
                 >
-                    <span>🏠</span>
                     <span>Back to Public Site</span>
                 </Link>
             </div>

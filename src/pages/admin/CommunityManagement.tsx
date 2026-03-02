@@ -22,7 +22,7 @@ export function CommunityManagement() {
 
     const fetchMembers = async () => {
         try {
-            const response = await fetch('/api/community');
+            const response = await fetch('/api/community?all=true');
             if (response.ok) {
                 const data = await response.json();
                 setMembers(data);

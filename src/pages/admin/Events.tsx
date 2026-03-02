@@ -81,7 +81,7 @@ export function AdminEvents() {
                     to="/admin/events/new"
                     className="font-hand text-xl bg-brand-burgundy text-brand-cream px-6 py-3 rounded-lg shadow-lg hover:shadow-xl hover:bg-brand-brown transition-all text-center"
                 >
-                    📅 Create New Event
+                    Create New Event
                 </Link>
             </div>
 
@@ -94,7 +94,7 @@ export function AdminEvents() {
                         to="/admin/events/new"
                         className="inline-block font-hand text-xl bg-brand-burgundy text-brand-cream px-6 py-3 rounded-lg shadow-lg hover:shadow-xl hover:bg-brand-brown transition-all"
                     >
-                        📅 Create First Event
+                        Create First Event
                     </Link>
                 </div>
             ) : (
@@ -135,7 +135,7 @@ export function AdminEvents() {
                                                     : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                                                     }`}
                                             >
-                                                {event.published ? '✅ Published' : '📝 Draft'}
+                                                {event.published ? 'Published' : 'Draft'}
                                             </button>
                                         </td>
                                         <td className="px-6 py-4">
@@ -144,13 +144,13 @@ export function AdminEvents() {
                                                     to={`/admin/events/edit/${event.id}`}
                                                     className="font-hand text-sm bg-brand-brown text-brand-cream px-3 py-2 rounded hover:bg-brand-burgundy transition-all"
                                                 >
-                                                    ✏️ Edit
+                                                    Edit
                                                 </Link>
                                                 <button
                                                     onClick={() => handleDelete(event.id)}
                                                     className="font-hand text-sm bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 transition-all"
                                                 >
-                                                    🗑️
+                                                    Delete
                                                 </button>
                                             </div>
                                         </td>

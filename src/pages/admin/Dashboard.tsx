@@ -32,10 +32,10 @@ export function AdminDashboard() {
     };
 
     const statCards = [
-        { label: 'Total Stories', value: stats.totalStories.toString(), icon: '📝', color: 'bg-brand-orange' },
-        { label: 'Gallery Images', value: stats.galleryCount.toString(), icon: '🖼️', color: 'bg-brand-burgundy' },
-        { label: 'Active Users', value: stats.activeUsers.toString(), icon: '👥', color: 'bg-brand-brown' },
-        { label: 'Published Posts', value: stats.publishedStories.toString(), icon: '✅', color: 'bg-green-600' },
+        { label: 'Total Stories', value: stats.totalStories.toString(), color: 'bg-brand-orange' },
+        { label: 'Gallery Images', value: stats.galleryCount.toString(), color: 'bg-brand-burgundy' },
+        { label: 'Active Users', value: stats.activeUsers.toString(), color: 'bg-brand-brown' },
+        { label: 'Published Posts', value: stats.publishedStories.toString(), color: 'bg-green-600' },
     ];
 
     if (loading) {
@@ -65,7 +65,6 @@ export function AdminDashboard() {
                         className="bg-brand-cream p-6 rounded-lg shadow-lg border-2 border-brand-brown/20 transform hover:scale-105 transition-transform"
                     >
                         <div className="flex items-center justify-between mb-4">
-                            <span className="text-4xl">{stat.icon}</span>
                         </div>
                         <div className="font-marker text-4xl text-brand-brown mb-2">
                             {stat.value}
@@ -87,19 +86,19 @@ export function AdminDashboard() {
                         to="/admin/stories/new"
                         className="font-hand text-xl bg-brand-burgundy text-brand-cream px-6 py-4 rounded-lg shadow-md hover:shadow-xl hover:bg-brand-brown transition-all text-center"
                     >
-                        ✍️ Create New Story
+                        Create New Story
                     </Link>
                     <Link
                         to="/admin/gallery"
                         className="font-hand text-xl bg-brand-orange text-brand-brown px-6 py-4 rounded-lg shadow-md hover:shadow-xl hover:bg-brand-burgundy hover:text-brand-cream transition-all text-center"
                     >
-                        📸 Upload Images
+                        Upload Images
                     </Link>
                     <Link
                         to="/admin/users"
                         className="font-hand text-xl bg-brand-brown text-brand-cream px-6 py-4 rounded-lg shadow-md hover:shadow-xl hover:bg-brand-burgundy transition-all text-center"
                     >
-                        👥 Manage Users
+                        Manage Users
                     </Link>
                 </div>
             </div>
@@ -111,13 +110,13 @@ export function AdminDashboard() {
                 </h2>
                 <div className="space-y-3">
                     <p className="font-hand text-lg text-brand-brown">
-                        📝 Create your first story to share community impact
+                        Create your first story to share community impact
                     </p>
                     <p className="font-hand text-lg text-brand-brown">
-                        🖼️ Upload gallery images to showcase your work
+                        Upload gallery images to showcase your work
                     </p>
                     <p className="font-hand text-lg text-brand-brown">
-                        ✅ Publish stories to make them visible on the website
+                        Publish stories to make them visible on the website
                     </p>
                 </div>
             </div>
