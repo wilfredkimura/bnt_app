@@ -64,8 +64,7 @@ export function HeroSection() {
           delay: 0.4,
           duration: 0.8
         }} className="font-hand text-2xl md:text-3xl text-brand-brown/80 max-w-lg mx-auto lg:mx-0 leading-relaxed">
-          Mapping literacy across Kenya. Transforming communities through
-          books, one trunk at a time. From Doldol to Kangemi to Rongai.
+          Books & Trunks Society is a community-led initiative dedicated to mapping and fostering literacy across Kenya. We transform lives through mobile book trunks, supporting students from Doldol to Kangemi.
         </motion.p>
 
         <motion.div initial={{
