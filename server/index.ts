@@ -12,8 +12,16 @@ import communityRouter from './routes/community.js';
 import eventsRouter from './routes/events.js';
 
 import { clerkMiddleware, recordActivityMiddleware } from './middleware/clerk.js';
+import helmet from 'helmet';
 
 const app = express();
+
+// Security Middleware
+app.use(helmet({
+    contentSecurityPolicy: false, // CSP is handled by Vercel's edge headers for consistency
+}));
+app.disable('x-powered-by');
+
 const PORT = process.env.PORT || 3001;
 
 // Middleware
