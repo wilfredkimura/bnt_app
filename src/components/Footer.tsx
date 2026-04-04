@@ -30,10 +30,10 @@ export function Footer() {
                     <div>
                         <h4 className="font-marker text-xl mb-4">Follow Us</h4>
                         <div className="flex space-x-4">
-                            <a href="https://www.instagram.com/books_n_trunks_" target="_blank" rel="noopener noreferrer" className="font-hand text-lg hover:text-brand-orange transition-colors">
+                             <a href="https://instagram.com/books_n_trunks_/" target="_blank" rel="noopener noreferrer" className="font-hand text-lg hover:text-brand-orange transition-colors">
                                 Instagram
                             </a>
-                            <a href="https://www.tiktok.com/@books_n_trunks_" target="_blank" rel="noopener noreferrer" className="font-hand text-lg hover:text-brand-orange transition-colors">
+                            <a href="https://tiktok.com/@books_n_trunks_" target="_blank" rel="noopener noreferrer" className="font-hand text-lg hover:text-brand-orange transition-colors">
                                 TikTok
                             </a>
                         </div>
@@ -47,7 +47,7 @@ export function Footer() {
                 </div>
             </div>
 
-            <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+            <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pointer-events-none"></div>
         </footer>
     );
 }
