@@ -248,12 +248,16 @@ export function SocietyProfile() {
                     <div className="flex flex-col md:flex-row justify-center gap-8 items-center">
                         <div className="space-y-2">
                             <p className="font-marker text-lg opacity-80 uppercase tracking-widest">Instagram</p>
-                            <a href="#" className="font-hand text-3xl hover:text-white transition-colors">@books_n_trunks_</a>
+                            <a href="https://www.instagram.com/books_n_trunks_" target="_blank" rel="noopener noreferrer" className="font-hand text-3xl hover:text-white transition-colors">@books_n_trunks_</a>
                         </div>
                         <div className="space-y-2">
                             <p className="font-marker text-lg opacity-80 uppercase tracking-widest">TikTok</p>
-                            <a href="#" className="font-hand text-3xl hover:text-white transition-colors">@books_n_trunks_</a>
+                            <a href="https://www.tiktok.com/@books_n_trunks_" target="_blank" rel="noopener noreferrer" className="font-hand text-3xl hover:text-white transition-colors">@books_n_trunks_</a>
                         </div>
+                    </div>
+                    <div className="mt-8">
+                        <p className="font-marker text-lg opacity-80 uppercase tracking-widest">Email</p>
+                        <a href="mailto:thebooksandtrunkssociety@gmail.com" className="font-hand text-2xl hover:text-white transition-colors">thebooksandtrunkssociety@gmail.com</a>
                     </div>
                     <p className="mt-16 font-marker text-xl opacity-60">
                         Foster Literacy Kwa Umoja - Promoting Literacy Together

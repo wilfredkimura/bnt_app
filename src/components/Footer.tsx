@@ -24,16 +24,16 @@ export function Footer() {
                             <br />
                             +254 705 956 111
                             <br />
-                            booksandtrunks@gmail.com
+                            thebooksandtrunkssociety@gmail.com
                         </p>
                     </div>
                     <div>
                         <h4 className="font-marker text-xl mb-4">Follow Us</h4>
                         <div className="flex space-x-4">
-                            <a href="#" className="font-hand text-lg hover:text-brand-orange transition-colors">
+                            <a href="https://www.instagram.com/books_n_trunks_" target="_blank" rel="noopener noreferrer" className="font-hand text-lg hover:text-brand-orange transition-colors">
                                 Instagram
                             </a>
-                            <a href="#" className="font-hand text-lg hover:text-brand-orange transition-colors">
+                            <a href="https://www.tiktok.com/@books_n_trunks_" target="_blank" rel="noopener noreferrer" className="font-hand text-lg hover:text-brand-orange transition-colors">
                                 TikTok
                             </a>
                         </div>
