@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Doodle } from './ui/Doodle';
-import { Polaroid } from './ui/Polaroid';
+import { ImageCard } from './ui/ImageCard';
 import { getAllGalleryItems } from '../lib/api';
-import type { GalleryItem } from '@prisma/client';
+import { type GalleryItem } from '../lib/db';
 
 export function HeroSection() {
   const [featuredImages, setFeaturedImages] = useState<GalleryItem[]>([]);
@@ -101,30 +101,27 @@ export function HeroSection() {
               <div className="w-12 h-12 border-4 border-brand-orange border-t-transparent rounded-full animate-spin"></div>
             </div>
           ) : featuredImages.length === 0 ? (
-            <Polaroid
+            <ImageCard
               src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
               alt="Children reading together"
               caption="Books & Trunks in Action"
-              rotation={-6}
-              attachment="pin"
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 z-10"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 z-10 shadow-2xl"
             />
           ) : (
             <div className="relative w-full h-full">
-              {featuredImages.map((image, index) => {
+              {featuredImages.map((image: GalleryItem, index: number) => {
                 const styles = [
-                  "absolute top-0 left-0 z-10 w-64 rotate-[-6deg]",
-                  "absolute bottom-4 right-0 z-20 w-64 rotate-[4deg]",
-                  "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 w-72 rotate-[2deg] shadow-2xl"
+                  "absolute top-0 left-0 z-10 w-72",
+                  "absolute bottom-4 right-0 z-20 w-72",
+                  "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 w-80 shadow-2xl"
                 ];
                 return (
                   <div key={image.id} className={styles[index] || styles[0]}>
-                    <Polaroid
+                    <ImageCard
                       src={image.imageUrl}
                       alt={image.caption || 'Featured image'}
                       caption={image.caption || ''}
-                      rotation={index === 0 ? -6 : index === 1 ? 4 : 2}
-                      attachment={index % 2 === 0 ? 'pin' : 'tape'}
+                      location={image.location || undefined}
                       delay={0.2 + index * 0.1}
                     />
                   </div>

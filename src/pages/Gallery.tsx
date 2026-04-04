@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Polaroid } from '../components/ui/Polaroid';
+import { ImageCard } from '../components/ui/ImageCard';
 import { Doodle } from '../components/ui/Doodle';
 import { ImageViewer } from '../components/ui/ImageViewer';
 import { getAllGalleryItems } from '../lib/api';
-import type { GalleryItem } from '@prisma/client';
+import { type GalleryItem } from '../lib/db';
 
 export function Gallery() {
     const [images, setImages] = useState<GalleryItem[]>([]);
@@ -26,10 +26,10 @@ export function Gallery() {
     }, []);
 
     // Extract unique tags from images
-    const availableTags = ['All', ...new Set(images.flatMap(item => item.tags))];
+    const availableTags = ['All', ...new Set(images.flatMap((item: GalleryItem) => item.tags))];
 
     const filteredItems = selectedTag && selectedTag !== 'All'
-        ? images.filter(item => item.tags.includes(selectedTag))
+        ? images.filter((item: GalleryItem) => item.tags.includes(selectedTag))
         : images;
 
     const handleNext = () => {
@@ -97,25 +97,18 @@ export function Gallery() {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-                            {filteredItems.map((item, index) => (
+                            {filteredItems.map((item: GalleryItem, index: number) => (
                                 <div
                                     key={item.id}
                                     className="transform hover:scale-105 transition-transform duration-300 cursor-pointer"
                                     onClick={() => setSelectedIndex(index)}
                                 >
-                                    <Polaroid
+                                    <ImageCard
                                         src={item.imageUrl}
                                         alt={item.caption || 'Gallery image'}
                                         caption={item.caption || ''}
-                                        rotation={index % 3 === 0 ? 2 : index % 3 === 1 ? -2 : 1}
+                                        location={item.location || undefined}
                                     />
-                                    {item.location && (
-                                        <div className="mt-4 text-center">
-                                            <p className="font-hand text-lg text-brand-brown/70">
-                                                📍 {item.location}
-                                            </p>
-                                        </div>
-                                    )}
                                 </div>
                             ))}
                         </div>

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Polaroid } from './ui/Polaroid';
+import { ImageCard } from './ui/ImageCard';
 import { Doodle } from './ui/Doodle';
 import { getAllGalleryItems } from '../lib/api';
-import type { GalleryItem } from '@prisma/client';
+import { type GalleryItem } from '../lib/db';
 
 export function GallerySection() {
   const [images, setImages] = useState<GalleryItem[]>([]);
@@ -51,13 +51,13 @@ export function GallerySection() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-4">
-          {images.map((item, index) => (
+          {images.map((item: GalleryItem, index: number) => (
             <div key={item.id} className="flex justify-center p-4">
-              <Polaroid
+              <ImageCard
                 src={item.imageUrl}
                 alt={item.caption || 'Gallery image'}
                 caption={item.caption || ''}
-                rotation={index % 3 === 0 ? 2 : index % 3 === 1 ? -2 : 1}
+                location={item.location || undefined}
                 delay={index * 0.1}
               />
             </div>
