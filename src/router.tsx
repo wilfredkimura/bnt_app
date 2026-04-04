@@ -21,6 +21,7 @@ import { CommunityManagement } from './pages/admin/CommunityManagement';
 import { AdminEvents } from './pages/admin/Events';
 import { AdminEventEditor } from './pages/admin/EventEditor';
 import { Profile } from './pages/Profile';
+import { SocietyProfile } from './pages/SocietyProfile';
 import { Members } from './pages/Members';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
@@ -42,6 +43,10 @@ export const router = createBrowserRouter([
             {
                 path: 'stories/:slug',
                 element: <StoryDetail />,
+            },
+            {
+                path: 'about',
+                element: <SocietyProfile />,
             },
             {
                 path: 'impact',

@@ -2,20 +2,20 @@
 import { motion } from 'framer-motion';
 import { Doodle } from './ui/Doodle';
 const stats = [{
-  number: '15',
-  label: 'Book Trunks Delivered',
-  color: 'bg-brand-orange',
-  rotate: '-rotate-2'
+  number: '4',
+  label: 'Communities Served',
+  color: 'bg-brand-peach',
+  rotate: '-rotate-1'
 }, {
   number: '925+',
   label: 'Books Donated',
   color: 'bg-brand-green',
   rotate: 'rotate-3'
 }, {
-  number: '3',
-  label: 'Communities Served',
-  color: 'bg-brand-peach',
-  rotate: '-rotate-1'
+  number: '15',
+  label: 'Book Trunks Delivered',
+  color: 'bg-brand-orange',
+  rotate: '-rotate-2'
 }];
 export function ImpactSection() {
   return <section className="py-20 px-4 bg-brand-cream relative">
@@ -26,7 +26,7 @@ export function ImpactSection() {
           Our Reach So Far
         </h2>
         <p className="font-hand text-2xl text-brand-brown/70">
-          Doldol • Kangemi • Ongata Rongai
+          Doldol • Kangemi • Ongata Rongai • Kisumu
         </p>
       </div>
 
