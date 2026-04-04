@@ -47,7 +47,7 @@ export const recordActivityMiddleware = async (req: any, _res: any, next: any) =
                 const photoUrl = clerkUser.imageUrl;
 
                 if (email) {
-                    await prisma.$transaction(async (tx) => {
+                    await prisma.$transaction(async (tx: any) => {
                         // Upsert User in Neon
                         const user = await tx.user.upsert({
                             where: { email },
@@ -86,7 +86,7 @@ export const recordActivityMiddleware = async (req: any, _res: any, next: any) =
                 }
             } else {
                 // Just update activity timestamp AND ensure role is in sync
-                await prisma.$transaction(async (tx) => {
+                await prisma.$transaction(async (tx: any) => {
                     await tx.user.update({
                         where: { clerkId },
                         data: { lastLogin: new Date() }
@@ -113,9 +113,30 @@ export const recordActivityMiddleware = async (req: any, _res: any, next: any) =
     next();
 };
 
-export const adminMiddleware = (req: any, res: any, next: any) => {
-    if (!req.auth?.userId) {
-        return res.status(401).json({ error: 'Unauthorized' });
+export const adminMiddleware = async (req: any, res: any, next: any) => {
+    try {
+        const clerkId = req.auth?.userId;
+        
+        if (!clerkId) {
+            return res.status(401).json({ error: 'Unauthorized - Login required' });
+        }
+
+        // Check user role in database
+        const user = await prisma.user.findUnique({
+            where: { clerkId },
+            select: { role: true }
+        });
+
+        if (!user || user.role !== 'Admin') {
+            console.warn(`[Security Alert] Unauthorized admin access attempt by ${clerkId}`);
+            return res.status(403).json({ error: 'Forbidden - Admin privileges required' });
+        }
+
+        // Attach role for downstream use
+        req.userRole = user.role;
+        next();
+    } catch (error) {
+        console.error('Admin middleware error:', error);
+        res.status(500).json({ error: 'Internal server error during authorization' });
     }
-    next();
 };

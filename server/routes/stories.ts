@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../../src/lib/prisma.js';
+import { adminMiddleware } from '../middleware/clerk.js';
 
 const router = Router();
 
@@ -55,8 +56,8 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// POST /api/stories - Create new story
-router.post('/', async (req, res) => {
+// POST /api/stories - Create new story (Admin only)
+router.post('/', adminMiddleware as any, async (req, res) => {
     try {
         const story = await prisma.story.create({
             data: req.body,
@@ -68,8 +69,8 @@ router.post('/', async (req, res) => {
     }
 });
 
-// PUT /api/stories/:id - Update story
-router.put('/:id', async (req, res) => {
+// PUT /api/stories/:id - Update story (Admin only)
+router.put('/:id', adminMiddleware as any, async (req, res) => {
     try {
         const { id } = req.params;
         const story = await prisma.story.update({
@@ -83,8 +84,8 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// DELETE /api/stories/:id - Delete story
-router.delete('/:id', async (req, res) => {
+// DELETE /api/stories/:id - Delete story (Admin only)
+router.delete('/:id', adminMiddleware as any, async (req, res) => {
     try {
         const { id } = req.params;
         await prisma.story.delete({

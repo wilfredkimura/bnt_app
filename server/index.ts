@@ -25,7 +25,25 @@ app.disable('x-powered-by');
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(cors());
+const allowedOrigins = [
+    'https://bnt-society.org',
+    'https://www.bnt-society.org',
+    'https://bnt-app-six.vercel.app', // Vercel preview/prod
+    'http://localhost:5173',          // Local dev
+    'http://localhost:3000',
+];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.warn(`[Security Alert] Blocked CORS request from origin: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+}));
 app.use(express.json());
 
 // Debug Logger

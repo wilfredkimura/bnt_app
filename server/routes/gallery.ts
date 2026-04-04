@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../../src/lib/prisma.js';
+import { adminMiddleware } from '../middleware/clerk.js';
 
 const router = Router();
 
@@ -20,8 +21,8 @@ router.get('/', async (_req, res) => {
     }
 });
 
-// POST /api/gallery - Create new gallery item
-router.post('/', async (req, res) => {
+// POST /api/gallery - Create new gallery item (Admin only)
+router.post('/', adminMiddleware as any, async (req, res) => {
     try {
         const item = await prisma.galleryItem.create({
             data: req.body,
@@ -36,8 +37,8 @@ router.post('/', async (req, res) => {
     }
 });
 
-// PUT /api/gallery/:id - Update gallery item
-router.put('/:id', async (req, res) => {
+// PUT /api/gallery/:id - Update gallery item (Admin only)
+router.put('/:id', adminMiddleware as any, async (req, res) => {
     try {
         const { id } = req.params;
         const item = await prisma.galleryItem.update({
@@ -51,8 +52,8 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// DELETE /api/gallery/:id - Delete gallery item
-router.delete('/:id', async (req, res) => {
+// DELETE /api/gallery/:id - Delete gallery item (Admin only)
+router.delete('/:id', adminMiddleware as any, async (req, res) => {
     try {
         const { id } = req.params;
         await prisma.galleryItem.delete({

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { prisma } from '../../src/lib/prisma.js';
 import ical, { ICalCalendarMethod } from 'ical-generator';
+import { adminMiddleware } from '../middleware/clerk.js';
 
 const router = Router();
 
@@ -34,7 +35,7 @@ router.get('/feed', async (_req, res) => {
             method: ICalCalendarMethod.PUBLISH,
         });
 
-        events.forEach(event => {
+        events.forEach((event: any) => {
             calendar.createEvent({
                 id: event.id,
                 start: event.eventDate,
@@ -56,12 +57,8 @@ router.get('/feed', async (_req, res) => {
 });
 
 // POST /api/events - Create new event (Admin only)
-router.post('/', async (req: any, res) => {
+router.post('/', adminMiddleware as any, async (req: any, res) => {
     try {
-        if (!req.auth?.userId) {
-            return res.status(401).json({ error: 'Unauthorized' });
-        }
-
         const { title, description, location, eventDate, endDate, eventType, published } = req.body;
 
         const event = await prisma.event.create({
@@ -85,13 +82,9 @@ router.post('/', async (req: any, res) => {
     }
 });
 
-// PUT /api/events/:id - Update event
-router.put('/:id', async (req: any, res) => {
+// PUT /api/events/:id - Update event (Admin only)
+router.put('/:id', adminMiddleware as any, async (req: any, res) => {
     try {
-        if (!req.auth?.userId) {
-            return res.status(401).json({ error: 'Unauthorized' });
-        }
-
         const { id } = req.params;
         const { title, description, location, eventDate, endDate, eventType, published } = req.body;
 
@@ -117,8 +110,8 @@ router.put('/:id', async (req: any, res) => {
     }
 });
 
-// DELETE /api/events/:id - Delete event
-router.delete('/:id', async (req, res) => {
+// DELETE /api/events/:id - Delete event (Admin only)
+router.delete('/:id', adminMiddleware as any, async (req, res) => {
     try {
         const { id } = req.params;
         await prisma.event.delete({

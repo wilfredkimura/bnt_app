@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { prisma } from '../../src/lib/prisma.js';
+import { adminMiddleware } from '../middleware/clerk.js';
 
 const router = Router();
 
@@ -52,10 +53,8 @@ router.post('/', async (req: any, res) => {
 });
 
 // GET /api/requests - Get all requests (Admin only)
-router.get('/', async (req: any, res) => {
+router.get('/', adminMiddleware as any, async (_req: any, res) => {
     try {
-        if (!req.auth?.userId) return res.status(401).json({ error: 'Unauthorized' });
-
         const requests = await prisma.userRequest.findMany({
             include: {
                 user: {
@@ -75,10 +74,35 @@ router.get('/', async (req: any, res) => {
     }
 });
 
-// GET /api/requests/user/:userId - Get requests for a specific user
+// GET /api/requests/user/:userId - Get requests for a specific user (Ownership or Admin check)
 router.get('/user/:userId', async (req: any, res) => {
     try {
         const { userId } = req.params;
+        const clerkId = req.auth?.userId;
+
+        if (!clerkId) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+
+        // 1. Get the requester's info from DB
+        const requester = await prisma.user.findUnique({
+            where: { clerkId },
+            select: { id: true, role: true }
+        });
+
+        if (!requester) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // 2. IDOR check: Is the requester the owner OR an admin?
+        const isOwner = requester.id === parseInt(userId);
+        const isAdmin = requester.role === 'Admin';
+
+        if (!isOwner && !isAdmin) {
+            console.warn(`[Security Alert] IDOR attempt by ${clerkId} on user ${userId}`);
+            return res.status(403).json({ error: 'Forbidden - You can only view your own requests' });
+        }
+
         const requests = await prisma.userRequest.findMany({
             where: { userId: parseInt(userId) },
             orderBy: { createdAt: 'desc' },
@@ -92,7 +116,7 @@ router.get('/user/:userId', async (req: any, res) => {
 });
 
 // PATCH /api/requests/:id - Update request status/notes (Admin only)
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', adminMiddleware as any, async (req, res) => {
     try {
         const { id } = req.params;
         const { status, adminNote } = req.body;
